@@ -25,8 +25,21 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'games'
+    # My Apps
+    'games',
+    # External Apps
+    'crispy_forms',
+    'crispy_bootstrap5',
 ]
+
+# Crispy Forms Settings
+CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap5'
+CRISPY_TEMPLATE_PACK = 'bootstrap5'
+
+# My Urls
+LOGIN_REDIRECT_URL = 'games:home'
+LOGOUT_REDIRECT_URL = 'games:home'
+LOGIN_URL = 'games:login'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

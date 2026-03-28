@@ -6,3 +6,17 @@
     box-sizing: border-box;
     font-family: 'Roboto', sans-serif;
 }
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+.asteriskField {
+    display: none;
+}

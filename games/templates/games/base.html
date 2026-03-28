@@ -28,14 +28,17 @@
                             <a class="nav-link" href="{% if request.user.username %}admin{% else %}#{% endif %}">{{ request.user.username|pretty_username }}</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Sair</a>
+                            <form method="post" action="{% url 'games:logout' %}" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="nav-link btn btn-link">Sair</button>
+                            </form>
                         </li>
                     {% else %}
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Entrar</a>
+                            <a class="nav-link" href="{% url 'games:login' %}">Entrar</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Cadastrar</a>
+                            <a class="nav-link" href="{% url 'games:register' %}">Cadastrar</a>
                         </li>
                     {% endif %}
                 </ul>
@@ -61,6 +64,17 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    {% block scripts %}{% endblock %}
+    {% block scripts %}
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                document.querySelectorAll('.alert').forEach(alert => {
+                    setTimeout(() => {
+                        alert.classList.remove('show');
+                        setTimeout(() => alert.remove(), 300);
+                    }, 3000);
+                });
+            });
+            </script>
+    {% endblock %}
 </body>
 </html>

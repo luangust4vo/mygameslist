@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block title %}Login — MyGameList{% endblock %}
+
+{% block content %}
+    <div class="row justify-content-center">
+        <div class="col-md-4">
+            <h2 class="mb-4">Entrar</h2>
+            <form method="post">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <button type="submit" class="btn btn-primary w-100">Entrar</button>
+            </form>
+            <p class="mt-3 text-center">
+                Não tem conta? <a href="{% url 'games:register' %}">Cadastre-se</a>
+            </p>
+        </div>
+    </div>
+{% endblock %}
