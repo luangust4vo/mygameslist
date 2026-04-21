@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load custom_filters %}
 
 {% block title %}{{ game.title }} — MyGameList{% endblock %}
 
@@ -40,7 +41,7 @@
             </p>
         {% endif %}
         <hr>
-        <p style="text-align: justify;">{{ game.description }}</p>
+        <p>{{ game.description|render_markdown }}</p>
     </div>
 </div>
 {% endblock %}
