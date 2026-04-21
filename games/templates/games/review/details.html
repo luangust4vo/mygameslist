@@ -29,12 +29,44 @@
                 <a href="{% url 'games:edit_review' review.game.pk review.pk %}" class="btn btn-sm btn-outline-primary">
                     Editar
                 </a>
-                <a href="{% url 'games:delete_review' review.game.pk review.pk %}" class="btn btn-sm btn-outline-danger">
+                <button
+                    type="button"
+                    class="btn btn-sm btn-outline-danger"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modalExcluir"
+                >
                     Excluir
-                </a>
+                </button>
             </div>
             {% endif %}
         </div>
     </div>
 </div>
+
+{% if request.user == review.user %}
+<div class="modal fade" id="modalExcluir" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Excluir review?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                Tem certeza que quer excluir a review
+                <strong>{{ review.title }}</strong>?
+                Essa ação não pode ser desfeita.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                    Cancelar
+                </button>
+                <form method="post" action="{% url 'games:delete_review' review.game.pk review.pk %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Sim, excluir</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
 {% endblock %}

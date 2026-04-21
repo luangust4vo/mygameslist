@@ -160,8 +160,11 @@ class ReviewUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
 class ReviewDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Review
-    template_name = "review/confirm_delete.html"
     context_object_name = "review"
+    pk_url_kwarg = "review_pk"
+
+    def get(self):
+        return redirect("games:reviews_list")
 
     def test_func(self):
         review = self.get_object()
