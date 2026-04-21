@@ -107,6 +107,10 @@ class ReviewDetailView(DetailView):
     model = Review
     template_name = "review/details.html"
     context_object_name = "review"
+    pk_url_kwarg = "review_pk"
+
+    def get_queryset(self):
+        return Review.objects.filter(game_id=self.kwargs["pk"])
 
 
 class ReviewCreateView(LoginRequiredMixin, CreateView):
