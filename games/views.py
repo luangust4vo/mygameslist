@@ -1,4 +1,12 @@
-from django.views.generic import TemplateView, CreateView, View
+from django.views.generic import (
+    TemplateView,
+    CreateView,
+    ListView,
+    UpdateView,
+    DetailView,
+    DeleteView,
+    View,
+)
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.forms import UserCreationForm
@@ -80,6 +88,27 @@ class GameDetailsView(View):
         return render(request, "games/game/details.html", {"game": game})
 
 
+class ReviewListView(ListView):
+    model = Review
+    template_name = "review/list.html"
+    context_object_name = "reviews"
+
+    def get_queryset(self):
+        self.jogo = get_object_or_404(Game, pk=self.kwargs["pk"])
+        return Review.objects.filter(game=self.jogo)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["game"] = self.jogo
+        return context
+
+
+class ReviewDetailView(DetailView):
+    model = Review
+    template_name = "review/details.html"
+    context_object_name = "review"
+
+
 class ReviewCreateView(LoginRequiredMixin, CreateView):
     model = Review
     form_class = ReviewForm
@@ -99,3 +128,40 @@ class ReviewCreateView(LoginRequiredMixin, CreateView):
         context["game"] = get_object_or_404(Game, pk=self.kwargs["pk"])
         context["title"] = "Nova Review"
         return context
+
+
+class ReviewUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Review
+    form_class = ReviewForm
+    template_name = "review/form.html"
+
+    def test_func(self):
+        review = self.get_object()
+        return self.request.user == review.user  # type: ignore
+
+    def form_valid(self, form):
+        messages.success(self.request, "Review atualizada com sucesso!")
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy("games:review_details", kwargs={"pk": self.object.pk})  # type: ignore
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["game"] = self.object.game  # type: ignore
+        context["title"] = "Editar Review"
+        return context
+
+
+class ReviewDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = Review
+    template_name = "review/confirm_delete.html"
+    context_object_name = "review"
+
+    def test_func(self):
+        review = self.get_object()
+        return self.request.user == review.user  # type: ignore
+
+    def get_success_url(self):
+        messages.success(self.request, "Review excluída.")
+        return reverse_lazy("games:reviews_list", kwargs={"pk": self.object.game.pk})  # type: ignore
