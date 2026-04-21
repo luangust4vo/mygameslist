@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}Buscar Jogos — MyGameList{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Buscar Jogos</h2>
+
+<form method="get" class="mb-4">
+    <div class="input-group">
+        <input
+            type="text"
+            name="q"
+            class="form-control"
+            placeholder="Nome do jogo..."
+            value="{{ query }}"
+            autofocus
+        >
+        <button type="submit" class="btn btn-primary">Buscar</button>
+    </div>
+</form>
+
+{% if results is not None %}
+    {% if results %}
+        <div class="row row-cols-2 row-cols-md-4 g-3">
+            {% for game in results %}
+            <div class="col">
+                <div class="card h-100">
+                    {% if game.background_image %}
+                        <img src="{{ game.background_image }}" class="card-img-top" alt="{{ game.name }}" style="height: 140px; object-fit: cover;">
+                    {% endif %}
+                    <div class="card-body">
+                        <h6 class="card-title">{{ game.name }}</h6>
+                        <small class="text-muted">{{ game.released|default:"Data desconhecida" }}</small>
+                    </div>
+                    <div class="card-footer">
+                        <form method="post" action="{% url 'games:import_game' game.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-outline-primary w-100">
+                                Ver detalhes
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-muted">Nenhum game encontrado para "{{ query }}".</p>
+    {% endif %}
+{% endif %}
+{% endblock %}

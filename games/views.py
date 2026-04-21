@@ -1,9 +1,13 @@
-from django.views.generic import TemplateView, CreateView
+from django.views.generic import TemplateView, CreateView, View
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
 from django.urls import reverse_lazy
 from django.contrib import messages
+from .rawg import get
+from .services import import_game
+from .models import Game
 
 class HomeView(TemplateView):
     template_name = 'games/home/home.html'
@@ -34,3 +38,31 @@ class RegisterView(CreateView):
         login(self.request, user)
         messages.success(self.request, 'Cadastro realizado com sucesso!')
         return response
+    
+class SearchGameView(View):
+    def get(self, request):
+        query = request.GET.get('q', '').strip()
+        results = None
+
+        if query:
+            data = get(query)
+            results = data.get('results', []) if data else []
+
+        return render(request, 'games/game/search.html', {
+            'results': results,
+            'query': query,
+        })
+
+class ImportGamesView(View):
+    def post(self, request, id):
+        game = import_game(id)
+        if game:
+            return redirect('games:game_details', pk=game.pk)
+        messages.error(request, 'Não foi possível importar o game.')
+        return redirect('games:search')
+
+
+class GameDetailsView(View):
+    def get(self, request, pk):
+        game = get_object_or_404(Game, pk=pk)
+        return render(request, 'games/game/details.html', {'game': game})

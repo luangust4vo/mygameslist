@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ game.title }} — MyGameList{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-3">
+        {% if game.cover_url %}
+            <img src="{{ game.cover_url }}" class="img-fluid rounded" alt="{{ game.title }}">
+        {% endif %}
+    </div>
+    <div class="col-md-9">
+        <h2>{{ game.title }}</h2>
+        <p class="text-muted">
+            Lançamento: {{ game.release_date|default:"Desconhecido" }}
+        </p>
+        <p>
+            Nota RAWG: {{ game.rawg_rating }}
+            {% if game.local_rating %}
+                — Nota MyGameList: {{ game.local_rating }}
+            {% endif %}
+        </p>
+        {% if game.genres.all %}
+            <p>
+                Gêneros:
+                {% for genero in game.genres.all %}
+                    <span class="badge bg-secondary">{{ genero }}</span>
+                {% endfor %}
+            </p>
+        {% endif %}
+        {% if game.platforms.all %}
+            <p>
+                Plataformas:
+                {% for plataforma in game.platforms.all %}
+                    <span class="badge bg-dark">{{ plataforma }}</span>
+                {% endfor %}
+            </p>
+        {% endif %}
+        <hr>
+        <p style="text-align: justify;">{{ game.description }}</p>
+    </div>
+</div>
+{% endblock %}
