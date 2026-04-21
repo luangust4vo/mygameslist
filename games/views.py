@@ -125,7 +125,7 @@ class ReviewCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse_lazy("games:review_details", kwargs={"pk": self.object.pk})  # type: ignore
+        return reverse_lazy("games:review_details", kwargs={"pk": self.object.pk, "review_pk": self.object.pk})  # type: ignore
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -138,6 +138,7 @@ class ReviewUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Review
     form_class = ReviewForm
     template_name = "review/form.html"
+    pk_url_kwarg = "review_pk"
 
     def test_func(self):
         review = self.get_object()
@@ -148,7 +149,7 @@ class ReviewUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse_lazy("games:review_details", kwargs={"pk": self.object.pk})  # type: ignore
+        return reverse_lazy("games:review_details", kwargs={"pk": self.object.pk, "review_pk": self.object.pk})  # type: ignore
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
