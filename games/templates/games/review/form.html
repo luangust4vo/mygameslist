@@ -17,7 +17,7 @@
             {{ form|crispy }}
             <div class="d-flex gap-2 mt-3">
                 <button type="submit" class="btn btn-primary">Salvar</button>
-                <a href="{% url 'games:game_details' game.pk %}" class="btn btn-outline-secondary">
+                <a href="{% url 'games:reviews_list' game.pk %}" class="btn btn-outline-secondary">
                     Cancelar
                 </a>
             </div>
