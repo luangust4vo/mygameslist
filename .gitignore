@@ -1,4 +1,5 @@
 venv/
+static_gcloud/
 __pycache__/
 *.pyc
 db.sqlite3

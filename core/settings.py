@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from django.core.exceptions import ImproperlyConfigured
 from dotenv import load_dotenv
 from urllib.parse import urlparse, parse_qsl
 
@@ -9,12 +10,20 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-%e*+uq4)2hpo_1&t*#7_++0g3+6gn8zxq8ilz^*q&uftb_@y!y"
+SECRET_KEY = os.getenv(
+    "SECRET_KEY", "django-insecure-%e*+uq4)2hpo_1&t*#7_++0g3+6gn8zxq8ilz^*q&uftb_@y!y"
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in os.getenv("ALLOWED_HOSTS", "mygameslist-497823.rj.r.appspot.com").split(
+        ","
+    )
+    if host.strip()
+]
 
 # Application definition
 
@@ -70,24 +79,70 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "core.wsgi.application"
 
+
+def _load_secret_from_manager(secret_id):
+    project_id = os.getenv("GOOGLE_CLOUD_PROJECT") or os.getenv(
+        "GOOGLE_CLOUD_PROJECT_ID"
+    )
+    if not project_id:
+        return None
+
+    from google.cloud import secretmanager
+
+    client = secretmanager.SecretManagerServiceClient()
+    name = f"projects/{project_id}/secrets/{secret_id}/versions/latest"
+    response = client.access_secret_version(request={"name": name})
+    return response.payload.data.decode("utf-8")
+
+
+def get_config_value(name, default=None, required_in_cloud=False):
+    value = os.getenv(name)
+    if value not in (None, ""):
+        return value
+
+    secret_value = _load_secret_from_manager(name)
+    if secret_value not in (None, ""):
+        return secret_value
+
+    project_id = os.getenv("GOOGLE_CLOUD_PROJECT") or os.getenv(
+        "GOOGLE_CLOUD_PROJECT_ID"
+    )
+    if required_in_cloud and project_id:
+        raise ImproperlyConfigured(
+            f"Missing {name} in the environment or Secret Manager."
+        )
+
+    return default
+
+
 # External API Settings
-API_KEY = os.getenv("API_KEY")
+API_KEY = get_config_value("API_KEY", required_in_cloud=True)
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-tmpPostgres = urlparse(os.getenv("DATABASE_URL", ""))
+database_url = get_config_value("DATABASE_URL", required_in_cloud=True)
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": tmpPostgres.path.replace("/", ""),
-        "USER": tmpPostgres.username,
-        "PASSWORD": tmpPostgres.password,
-        "HOST": tmpPostgres.hostname,
-        "PORT": 5432,
-        "OPTIONS": dict(parse_qsl(tmpPostgres.query)),
+if database_url:
+    tmpPostgres = urlparse(database_url)
+
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": tmpPostgres.path.replace("/", ""),
+            "USER": tmpPostgres.username,
+            "PASSWORD": tmpPostgres.password,
+            "HOST": tmpPostgres.hostname,
+            "PORT": 5432,
+            "OPTIONS": dict(parse_qsl(tmpPostgres.query)),
+        }
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
 
 
 # Password validation
@@ -121,6 +176,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = "static/"
+STATIC_ROOT = BASE_DIR / "static_gcloud"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 
 # Default primary key field type
