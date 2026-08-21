@@ -92,10 +92,11 @@ class ReviewListView(ListView):
     model = Review
     template_name = "review/list.html"
     context_object_name = "reviews"
+    paginate_by = 10
 
     def get_queryset(self):
         self.jogo = get_object_or_404(Game, pk=self.kwargs["pk"])
-        return Review.objects.filter(game=self.jogo)
+        return Review.objects.filter(game=self.jogo).select_related("user", "game")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -137,7 +138,7 @@ class ReviewCreateView(LoginRequiredMixin, CreateView):
 class ReviewUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Review
     form_class = ReviewForm
-    template_name = "review/form.html"
+    template_name = "games/review/form.html"
     pk_url_kwarg = "review_pk"
 
     def test_func(self):

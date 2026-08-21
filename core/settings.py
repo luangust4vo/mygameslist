@@ -41,6 +41,23 @@ INSTALLED_APPS = [
     "crispy_bootstrap5",
 ]
 
+if DEBUG:
+    INSTALLED_APPS += ["debug_toolbar"]
+
+MIDDLEWARE = [
+    "django.middleware.security.SecurityMiddleware",
+]
+
+if DEBUG:
+    MIDDLEWARE.insert(1, "debug_toolbar.middleware.DebugToolbarMiddleware")
+
+MIDDLEWARE += [
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    # ... resto igual
+]
+
+INTERNAL_IPS = ["127.0.0.1"]
+
 # Crispy Forms Settings
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"

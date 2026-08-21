@@ -25,7 +25,7 @@
                             <a class="nav-link" href="#">Minha Lista</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% if request.user.username %}admin{% else %}#{% endif %}">{{ request.user.username|pretty_username }}</a>
+                            <a class="nav-link" href="{% if request.user.username %}admin{% else %}{% url 'games:password_change' %}{% endif %}">{{ request.user.username|pretty_username }}</a>
                         </li>
                         <li class="nav-item">
                             <form method="post" action="{% url 'games:logout' %}" class="d-inline">
