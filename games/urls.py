@@ -65,4 +65,5 @@ urlpatterns = [
         views.RemoveFromListView.as_view(),
         name="remove_from_list",
     ),
+    path("moderacao/", views.ModerationPanelView.as_view(), name="moderation_panel"),
 ]

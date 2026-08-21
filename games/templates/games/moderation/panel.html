@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block title %}Painel de Moderação — MyGameList{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Painel de Moderação</h2>
+
+{% if reviews %}
+<div class="table-responsive">
+    <table class="table align-middle">
+        <thead>
+            <tr>
+                <th>Usuário</th>
+                <th>Jogo</th>
+                <th>Nota</th>
+                <th>Título</th>
+                <th>Data</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for review in reviews %}
+            <tr>
+                <td>{{ review.user.username }}</td>
+                <td>{{ review.game.title }}</td>
+                <td><span class="badge bg-primary">{{ review.get_rating_display }}</span></td>
+                <td>{{ review.title }}</td>
+                <td>{{ review.created_at|date:"d/m/Y" }}</td>
+                <td class="d-flex gap-2">
+                    <a href="{% url 'games:review_details' review.game.pk review.pk %}" class="btn btn-sm btn-outline-secondary">
+                        Ver
+                    </a>
+                    <form method="post" action="{% url 'games:delete_review' review.game.pk review.pk %}">
+                        {% csrf_token %}
+                        <button
+                            type="submit"
+                            class="btn btn-sm btn-outline-danger"
+                            onclick="return confirm('Excluir a review de {{ review.user.username }}?');"
+                        >
+                            Excluir
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if is_paginated %}
+<nav class="mt-4">
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Anterior</a>
+            </li>
+        {% endif %}
+        <li class="page-item disabled">
+            <span class="page-link">{{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+        </li>
+        {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}">Próxima</a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+{% else %}
+<p class="text-muted">Nenhuma review cadastrada ainda.</p>
+{% endif %}
+{% endblock %}

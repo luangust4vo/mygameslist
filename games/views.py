@@ -1,3 +1,4 @@
+from .mixins import GroupRequiredMixin
 from django.views.generic import (
     TemplateView,
     CreateView,
@@ -174,7 +175,8 @@ class ReviewDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
     def test_func(self):
         review = self.get_object()
-        return self.request.user == review.user  # type: ignore
+        user = self.request.user
+        return user == review.user or user.groups.filter(name="Moderador").exists()
 
     def get_success_url(self):
         messages.success(self.request, "Review excluída.")
@@ -277,3 +279,14 @@ class RemoveFromListView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         )
         messages.success(self.request, "Jogo removido da sua lista.")
         return reverse_lazy("games:my_list")
+
+
+class ModerationPanelView(LoginRequiredMixin, GroupRequiredMixin, ListView):
+    model = Review
+    template_name = "games/moderation/panel.html"
+    context_object_name = "reviews"
+    group_required = "Moderador"
+    paginate_by = 20
+
+    def get_queryset(self):
+        return Review.objects.select_related("user", "game").order_by("-created_at")
