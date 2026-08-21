@@ -24,6 +24,17 @@ from .forms import ReviewForm, UserGameListForm
 class HomeView(TemplateView):
     template_name = "games/home/home.html"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["recent_activities"] = Activity.objects.select_related(
+            "user", "game"
+        ).order_by("-created_at")[:8]
+        context["top_rated_games"] = Game.objects.filter(local_rating__gt=0).order_by(
+            "-local_rating"
+        )[:6]
+        context["recent_games"] = Game.objects.order_by("-id")[:6]
+        return context
+
 
 class CustomLoginView(LoginView):
     template_name = "games/auth/login.html"

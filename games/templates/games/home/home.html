@@ -3,6 +3,75 @@
 {% block title %}Home — MyGameList{% endblock %}
 
 {% block content %}
-    <h2>Bem-vindo ao MyGameList</h2>
-    <p>Em construção...</p>
+<h2 class="mb-4">Bem-vindo ao MyGameList</h2>
+
+<div class="row g-4">
+    <div class="col-md-6">
+        <h4 class="mb-3">Atividades recentes</h4>
+        {% if recent_activities %}
+            <ul class="list-group">
+                {% for activity in recent_activities %}
+                <li class="list-group-item">
+                    <strong>{{ activity.user.username }}</strong>
+                    {{ activity.get_action_display|lower }}
+                    <a href="{% url 'games:game_details' activity.game.pk %}">{{ activity.game.title }}</a>
+                    {% if activity.detail %}
+                        <br><small class="text-muted">{{ activity.detail }}</small>
+                    {% endif %}
+                    <br><small class="text-muted">{{ activity.created_at|timesince }} atrás</small>
+                </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-muted">Nenhuma atividade ainda. Adicione um jogo à sua lista ou escreva uma review!</p>
+        {% endif %}
+    </div>
+
+    <div class="col-md-6">
+        <h4 class="mb-3">Melhores avaliados</h4>
+        {% if top_rated_games %}
+            <div class="row row-cols-2 row-cols-md-3 g-2 mb-4">
+                {% for game in top_rated_games %}
+                <div class="col">
+                    <a href="{% url 'games:game_details' game.pk %}" class="text-decoration-none text-body">
+                        <div class="card h-100">
+                            {% if game.cover_url %}
+                                <img src="{{ game.cover_url }}" class="card-img-top" style="height: 90px; object-fit: cover;" alt="{{ game.title }}">
+                            {% endif %}
+                            <div class="card-body p-2">
+                                <small class="d-block text-truncate">{{ game.title }}</small>
+                                <span class="badge bg-success">{{ game.local_rating }}</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-muted">Nenhum jogo avaliado ainda.</p>
+        {% endif %}
+
+        <h4 class="mb-3">Cadastrados recentemente</h4>
+        {% if recent_games %}
+            <div class="row row-cols-2 row-cols-md-3 g-2">
+                {% for game in recent_games %}
+                <div class="col">
+                    <a href="{% url 'games:game_details' game.pk %}" class="text-decoration-none text-body">
+                        <div class="card h-100">
+                            {% if game.cover_url %}
+                                <img src="{{ game.cover_url }}" class="card-img-top" style="height: 90px; object-fit: cover;" alt="{{ game.title }}">
+                            {% endif %}
+                            <div class="card-body p-2">
+                                <small class="d-block text-truncate">{{ game.title }}</small>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-muted">Nenhum jogo cadastrado ainda. <a href="{% url 'games:search' %}">Buscar jogos</a>.</p>
+        {% endif %}
+    </div>
+</div>
 {% endblock %}
