@@ -49,4 +49,20 @@ urlpatterns = [
         ),
         name="password_change_done",
     ),
+    path("minha-lista/", views.MyGameListView.as_view(), name="my_list"),
+    path(
+        "game/<int:pk>/lista/adicionar/",
+        views.AddToListView.as_view(),
+        name="add_to_list",
+    ),
+    path(
+        "lista/<int:pk>/editar/",
+        views.EditListItemView.as_view(),
+        name="edit_list_item",
+    ),
+    path(
+        "lista/<int:pk>/remover/",
+        views.RemoveFromListView.as_view(),
+        name="remove_from_list",
+    ),
 ]

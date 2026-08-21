@@ -16,8 +16,8 @@ from django.urls import reverse_lazy
 from django.contrib import messages
 from .rawg import get
 from .services import import_game
-from .models import Game, Review
-from .forms import ReviewForm
+from .models import Game, Review, UserGameList, Activity
+from .forms import ReviewForm, UserGameListForm
 
 
 class HomeView(TemplateView):
@@ -85,7 +85,12 @@ class ImportGamesView(View):
 class GameDetailsView(View):
     def get(self, request, pk):
         game = get_object_or_404(Game, pk=pk)
-        return render(request, "games/game/details.html", {"game": game})
+        context = {"game": game}
+        if request.user.is_authenticated:
+            context["user_list_item"] = UserGameList.objects.filter(
+                user=request.user, game=game
+            ).first()
+        return render(request, "games/game/details.html", context)
 
 
 class ReviewListView(ListView):
@@ -174,3 +179,101 @@ class ReviewDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def get_success_url(self):
         messages.success(self.request, "Review excluída.")
         return reverse_lazy("games:reviews_list", kwargs={"pk": self.object.game.pk})  # type: ignore
+
+
+class MyGameListView(LoginRequiredMixin, ListView):
+    model = UserGameList
+    template_name = "games/list/user_games_list.html"
+    context_object_name = "items"
+    paginate_by = 12
+
+    def get_queryset(self):
+        return UserGameList.objects.filter(user=self.request.user).select_related(
+            "game"
+        )
+
+
+class AddToListView(LoginRequiredMixin, CreateView):
+    model = UserGameList
+    form_class = UserGameListForm
+    template_name = "games/list/manage_item_list.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        self.game = get_object_or_404(Game, pk=self.kwargs["pk"])
+        existing = UserGameList.objects.filter(
+            user=request.user, game=self.game
+        ).first()
+        if existing:
+            return redirect("games:edit_list_item", pk=existing.pk)
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        form.instance.game = self.game
+        response = super().form_valid(form)
+        Activity.objects.create(
+            user=self.request.user,
+            game=self.game,
+            action="added",
+            detail=f"Adicionou à lista como {self.object.get_status_display()}",  # type: ignore
+        )
+        messages.success(self.request, "Jogo adicionado à sua lista!")
+        return response
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["game"] = self.game
+        context["title"] = "Adicionar à minha lista"
+        return context
+
+    def get_success_url(self):
+        return reverse_lazy("games:my_list")
+
+
+class EditListItemView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = UserGameList
+    form_class = UserGameListForm
+    template_name = "games/list/manage_item_list.html"
+
+    def test_func(self):
+        return self.request.user == self.get_object().user
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        if self.object.status in UserGameList.STATUSES_THAT_TRIGGER:  # type: ignore
+            Activity.objects.create(
+                user=self.request.user,
+                game=self.object.game,  # type: ignore
+                action="status",
+                detail=f"Mudou o status para {self.object.get_status_display()}",  # type: ignore
+            )
+        messages.success(self.request, "Status atualizado!")
+        return response
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["game"] = self.object.game  # type: ignore
+        context["title"] = "Atualizar status"
+        return context
+
+    def get_success_url(self):
+        return reverse_lazy("games:my_list")
+
+
+class RemoveFromListView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = UserGameList
+    context_object_name = "item"
+    template_name = "games/list/confirm_delete_item_list.html"
+
+    def test_func(self):
+        return self.request.user == self.get_object().user
+
+    def get_success_url(self):
+        Activity.objects.create(
+            user=self.request.user,
+            game=self.object.game,  # type: ignore
+            action="removed",
+            detail="Removeu da lista",
+        )
+        messages.success(self.request, "Jogo removido da sua lista.")
+        return reverse_lazy("games:my_list")

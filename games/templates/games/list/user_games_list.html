@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block title %}Minha Lista — MyGameList{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Minha Lista</h2>
+
+{% if items %}
+<div class="row row-cols-1 row-cols-md-2 g-3">
+    {% for item in items %}
+    <div class="col">
+        <div class="card h-100">
+            <div class="card-body d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="card-title mb-1">
+                        <a href="{% url 'games:game_details' item.game.pk %}" class="text-decoration-none">
+                            {{ item.game.title }}
+                        </a>
+                    </h5>
+                    <span class="badge bg-secondary">{{ item.get_status_display }}</span>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'games:edit_list_item' item.pk %}" class="btn btn-sm btn-outline-primary">
+                        Status
+                    </a>
+                    <a href="{% url 'games:remove_from_list' item.pk %}" class="btn btn-sm btn-outline-danger">
+                        Remover
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% if is_paginated %}
+<nav class="mt-4">
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Anterior</a>
+            </li>
+        {% endif %}
+        <li class="page-item disabled">
+            <span class="page-link">{{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+        </li>
+        {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}">Próxima</a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+{% else %}
+<p class="text-muted">Sua lista está vazia. Busque um jogo e adicione à sua lista!</p>
+<a href="{% url 'games:search' %}" class="btn btn-primary">Buscar Jogos</a>
+{% endif %}
+{% endblock %}
