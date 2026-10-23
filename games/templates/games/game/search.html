@@ -33,12 +33,18 @@
                         <small class="text-muted">{{ game.released|default:"Data desconhecida" }}</small>
                     </div>
                     <div class="card-footer">
+                        {% if request.user.is_authenticated %}
                         <form method="post" action="{% url 'games:import_game' game.id %}">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-sm btn-outline-primary w-100">
                                 Ver detalhes
                             </button>
                         </form>
+                        {% else %}
+                        <a href="{% url 'games:login' %}?next={{ request.get_full_path|urlencode }}" class="btn btn-sm btn-outline-secondary w-100">
+                            Entre para ver detalhes
+                        </a>
+                        {% endif %}
                     </div>
                 </div>
             </div>

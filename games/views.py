@@ -85,7 +85,7 @@ class SearchGameView(View):
         )
 
 
-class ImportGamesView(View):
+class ImportGamesView(LoginRequiredMixin, View):
     def post(self, request, id):
         game = import_game(id)
         if game:
@@ -136,9 +136,27 @@ class ReviewCreateView(LoginRequiredMixin, CreateView):
     form_class = ReviewForm
     template_name = "games/review/form.html"
 
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return self.handle_no_permission()
+
+        self.game = get_object_or_404(Game, pk=self.kwargs["pk"])
+        existing = Review.objects.filter(user=request.user, game=self.game).first()
+        if existing:
+            messages.info(request, "Você já avaliou este jogo. Edite sua review.")
+            return redirect(
+                "games:edit_review", pk=self.game.pk, review_pk=existing.pk
+            )
+        if not UserGameList.objects.filter(user=request.user, game=self.game).exists():
+            messages.error(
+                request, "Adicione o jogo à sua lista antes de avaliá-lo."
+            )
+            return redirect("games:game_details", pk=self.game.pk)
+        return super().dispatch(request, *args, **kwargs)
+
     def form_valid(self, form):
         form.instance.user = self.request.user
-        form.instance.game = get_object_or_404(Game, pk=self.kwargs["pk"])
+        form.instance.game = self.game
         messages.success(self.request, "Review publicada com sucesso!")
         return super().form_valid(form)
 
@@ -147,7 +165,7 @@ class ReviewCreateView(LoginRequiredMixin, CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["game"] = get_object_or_404(Game, pk=self.kwargs["pk"])
+        context["game"] = self.game
         context["title"] = "Nova Review"
         return context
 
@@ -181,8 +199,8 @@ class ReviewDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     context_object_name = "review"
     pk_url_kwarg = "review_pk"
 
-    def get(self):
-        return redirect("games:reviews_list")
+    def get(self, request, *args, **kwargs):
+        return redirect("games:reviews_list", pk=kwargs["pk"])
 
     def test_func(self):
         review = self.get_object()
@@ -212,6 +230,9 @@ class AddToListView(LoginRequiredMixin, CreateView):
     template_name = "games/list/manage_item_list.html"
 
     def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return self.handle_no_permission()
+
         self.game = get_object_or_404(Game, pk=self.kwargs["pk"])
         existing = UserGameList.objects.filter(
             user=request.user, game=self.game
