@@ -44,18 +44,6 @@ INSTALLED_APPS = [
 if DEBUG:
     INSTALLED_APPS += ["debug_toolbar"]
 
-MIDDLEWARE = [
-    "django.middleware.security.SecurityMiddleware",
-]
-
-if DEBUG:
-    MIDDLEWARE.insert(1, "debug_toolbar.middleware.DebugToolbarMiddleware")
-
-MIDDLEWARE += [
-    "django.contrib.sessions.middleware.SessionMiddleware",
-    # ... resto igual
-]
-
 INTERNAL_IPS = ["127.0.0.1"]
 
 # Crispy Forms Settings
@@ -76,6 +64,9 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+if DEBUG:
+    MIDDLEWARE.insert(1, "debug_toolbar.middleware.DebugToolbarMiddleware")
 
 ROOT_URLCONF = "core.urls"
 
