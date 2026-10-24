@@ -46,9 +46,14 @@ Testes ficam em `games/tests.py` e usam `django.test.TestCase` com o `Client`. N
 - `docs/proposta.md`: proposta do sistema, com problema, usuários, escopo e regras de negócio. O que está marcado **(novo)** ainda não foi implementado.
 - `docs/2026 - Plano de Atividades e Avaliações-1.pdf`: plano de atividades e avaliações da disciplina.
 
+## Skills (`.claude/skills/`)
+
+- Do projeto: `nova-tela-django` (view + URL + template + teste), `testes-django` (como montar e o que cobrir nos testes) e `commit-padrao` (mensagem de commit).
+- De terceiros, instaladas com `npx skills add mattpocock/skills` e fixadas em `skills-lock.json`: `tdd`, `diagnosing-bugs`, `grill-me`, `to-spec`, `implement-spec`, `triage`, `domain-modeling`, `improve-codebase-architecture`, `handoff`, `git-guardrails-claude-code`. Atualize com `npx skills update` e não edite os arquivos delas à mão.
+
 ## Commits
 
-[Conventional Commits](https://www.conventionalcommits.org/), em inglês, no imperativo e em minúsculas:
+[Conventional Commits](https://www.conventionalcommits.org/), em inglês, no imperativo e em minúsculas. Esta regra vale sobre a skill `commit-padrao` no idioma e nos escopos; dela, siga a exigência de corpo concreto em mudanças maiores:
 
 ```
 feat: add review filter by status
