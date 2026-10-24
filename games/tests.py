@@ -5,7 +5,7 @@ from django.contrib.messages import get_messages
 from django.test import TestCase
 from django.urls import reverse
 
-from .models import Game, Review, UserGameList
+from .models import Activity, Game, Review, UserGameList
 
 
 class DuplicateReviewTests(TestCase):
@@ -119,3 +119,25 @@ class ReviewRequiresGameInListTests(TestCase):
                         kwargs={"pk": self.game.pk, "review_pk": review.pk},
                     ),
                 )
+
+
+class ReviewActivityTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username="jogador", password="senha123")
+        self.game = Game.objects.create(rawg_id=1, title="Hollow Knight")
+        UserGameList.objects.create(user=self.user, game=self.game, status="completed")
+        self.client.login(username="jogador", password="senha123")
+        self.create_url = reverse("games:create_review", kwargs={"pk": self.game.pk})
+
+    def test_publishing_review_creates_reviewed_activity(self):
+        self.client.post(self.create_url, {"title": "Ótimo jogo", "rating": 5, "body": ""})
+
+        activity = Activity.objects.get(action="reviewed")
+        self.assertEqual(activity.user, self.user)
+        self.assertEqual(activity.game, self.game)
+        self.assertEqual(activity.detail, "Avaliou como Obra de Arte")
+
+    def test_invalid_review_creates_no_activity(self):
+        self.client.post(self.create_url, {"title": "", "rating": 5, "body": ""})
+
+        self.assertFalse(Activity.objects.filter(action="reviewed").exists())

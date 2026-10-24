@@ -157,8 +157,15 @@ class ReviewCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.user = self.request.user
         form.instance.game = self.game
+        response = super().form_valid(form)
+        Activity.objects.create(
+            user=self.request.user,
+            game=self.game,
+            action="reviewed",
+            detail=f"Avaliou como {self.object.get_rating_display()}",  # type: ignore
+        )
         messages.success(self.request, "Review publicada com sucesso!")
-        return super().form_valid(form)
+        return response
 
     def get_success_url(self):
         return reverse_lazy("games:review_details", kwargs={"pk": self.object.game.pk, "review_pk": self.object.pk})  # type: ignore
