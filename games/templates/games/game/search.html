@@ -1,57 +1,63 @@
 {% extends 'base.html' %}
 
-{% block title %}Buscar Jogos — MyGameList{% endblock %}
+{% block title %}Buscar jogos — MyGamesList{% endblock %}
 
 {% block content %}
-<h2 class="mb-4">Buscar Jogos</h2>
+<h1 class="mgl-page-title">Buscar jogos</h1>
 
-<form method="get" class="mb-4">
-    <div class="input-group">
+<form method="get" class="mb-5" role="search">
+    <label for="busca" class="visually-hidden">Nome do jogo</label>
+    <div class="input-group input-group-lg">
         <input
-            type="text"
+            type="search"
+            id="busca"
             name="q"
             class="form-control"
-            placeholder="Nome do jogo..."
+            placeholder="Nome do jogo, como Hollow Knight"
             value="{{ query }}"
             autofocus
         >
-        <button type="submit" class="btn btn-primary">Buscar</button>
+        <button type="submit" class="btn btn-primary px-4">Buscar</button>
     </div>
 </form>
 
 {% if results is not None %}
     {% if results %}
-        <div class="row row-cols-2 row-cols-md-4 g-3">
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
             {% for game in results %}
             <div class="col">
-                <div class="card h-100">
-                    {% if game.background_image %}
-                        <img src="{{ game.background_image }}" class="card-img-top" alt="{{ game.name }}" style="height: 140px; object-fit: cover;">
-                    {% endif %}
-                    <div class="card-body">
-                        <h6 class="card-title">{{ game.name }}</h6>
-                        <small class="text-muted">{{ game.released|default:"Data desconhecida" }}</small>
+                <article class="mgl-card">
+                    <div class="mgl-cover">
+                        {% if game.background_image %}
+                            <img src="{{ game.background_image }}" alt="" loading="lazy">
+                        {% else %}
+                            <span class="mgl-cover-fallback" aria-hidden="true">{{ game.name }}</span>
+                        {% endif %}
                     </div>
-                    <div class="card-footer">
+                    <div class="mgl-card-body">
+                        <h2 class="mgl-card-title">{{ game.name }}</h2>
+                        <span class="mgl-card-meta">{{ game.released|slice:":4"|default:"Sem data" }}</span>
+                    </div>
+                    <div class="mgl-card-actions">
                         {% if request.user.is_authenticated %}
-                        <form method="post" action="{% url 'games:import_game' game.id %}">
+                        <form method="post" action="{% url 'games:import_game' game.id %}" class="w-100">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-sm btn-outline-primary w-100">
                                 Ver detalhes
                             </button>
                         </form>
                         {% else %}
-                        <a href="{% url 'games:login' %}?next={{ request.get_full_path|urlencode }}" class="btn btn-sm btn-outline-secondary w-100">
+                        <a href="{% url 'games:login' %}?next={{ request.get_full_path|urlencode }}" class="btn btn-sm btn-outline-secondary">
                             Entre para ver detalhes
                         </a>
                         {% endif %}
                     </div>
-                </div>
+                </article>
             </div>
             {% endfor %}
         </div>
     {% else %}
-        <p class="text-muted">Nenhum game encontrado para "{{ query }}".</p>
+        <p class="mgl-empty">Nenhum jogo encontrado para "{{ query }}". Confira a grafia ou tente o nome em inglês.</p>
     {% endif %}
 {% endif %}
 {% endblock %}

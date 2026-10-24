@@ -17,3 +17,8 @@ def pretty_username(value):
 @register.filter
 def render_markdown(text):
     return mark_safe(markdown.markdown(text))
+
+
+@register.filter
+def has_group(user, name):
+    return user.is_authenticated and user.groups.filter(name=name).exists()

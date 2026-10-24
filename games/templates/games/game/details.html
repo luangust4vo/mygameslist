@@ -1,59 +1,71 @@
 {% extends 'base.html' %}
 {% load custom_filters %}
 
-{% block title %}{{ game.title }} — MyGameList{% endblock %}
+{% block title %}{{ game.title }} — MyGamesList{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-3">
-        {% if game.cover_url %}
-            <img src="{{ game.cover_url }}" class="img-fluid rounded" alt="{{ game.title }}">
-        {% endif %}
-        <a href="{% url 'games:reviews_list' game.pk %}" class="btn btn-outline-primary w-100 mt-3">
-            Ver reviews
-        </a>
-
-        {% if request.user.is_authenticated %}
-            {% if user_list_item %}
-                <a href="{% url 'games:edit_list_item' user_list_item.pk %}" class="btn btn-outline-primary w-100 mt-2">
-                    Na lista: {{ user_list_item.get_status_display }}
-                </a>
+<div class="row g-4 g-lg-5">
+    <div class="col-md-5 col-lg-4">
+        <div class="mgl-cover">
+            {% if game.cover_url %}
+                <img src="{{ game.cover_url }}" alt="">
             {% else %}
-                <a href="{% url 'games:add_to_list' game.pk %}" class="btn btn-primary w-100 mt-2">
-                    Adicionar à lista
-                </a>
+                <span class="mgl-cover-fallback" aria-hidden="true">{{ game.title }}</span>
             {% endif %}
-        {% endif %}
+            {% if user_list_item %}
+                <span class="mgl-sticker status-{{ user_list_item.status }}">{{ user_list_item.get_status_display }}</span>
+            {% endif %}
+        </div>
+
+        <div class="d-grid gap-2 mt-3">
+            {% if request.user.is_authenticated %}
+                {% if user_list_item %}
+                    <a href="{% url 'games:edit_list_item' user_list_item.pk %}" class="btn btn-outline-primary">
+                        Mudar status
+                    </a>
+                {% else %}
+                    <a href="{% url 'games:add_to_list' game.pk %}" class="btn btn-primary">
+                        Adicionar à lista
+                    </a>
+                {% endif %}
+            {% endif %}
+            <a href="{% url 'games:reviews_list' game.pk %}" class="btn btn-outline-secondary">
+                Ver reviews
+            </a>
+        </div>
     </div>
-    <div class="col-md-9">
-        <h2>{{ game.title }}</h2>
-        <p class="text-muted">
-            Lançamento: {{ game.release_date|default:"Desconhecido" }}
-        </p>
-        <p>
-            Nota RAWG: {{ game.rawg_rating }}
-            {% if game.local_rating %}
-                — Nota MyGameList: {{ game.local_rating }}
+
+    <div class="col-md-7 col-lg-8">
+        <h1>{{ game.title }}</h1>
+
+        <dl class="mgl-game-facts">
+            <dt>Nota MyGamesList</dt>
+            <dd>
+                {% if game.local_rating %}
+                    <span class="mgl-score">{{ game.local_rating|floatformat:1 }}<span class="mgl-score-scale">de 5</span></span>
+                {% else %}
+                    <span class="mgl-empty">Sem reviews ainda</span>
+                {% endif %}
+            </dd>
+            <dt>Nota RAWG</dt>
+            <dd>{{ game.rawg_rating|floatformat:1 }} de 5</dd>
+            <dt>Lançamento</dt>
+            <dd>{{ game.release_date|date:"d/m/Y"|default:"Desconhecido" }}</dd>
+            {% if game.genres.all %}
+                <dt>Gêneros</dt>
+                <dd>
+                    {% for genero in game.genres.all %}<span class="mgl-tag">{{ genero }}</span>{% endfor %}
+                </dd>
             {% endif %}
-        </p>
-        {% if game.genres.all %}
-            <p>
-                Gêneros:
-                {% for genero in game.genres.all %}
-                    <span class="badge bg-secondary">{{ genero }}</span>
-                {% endfor %}
-            </p>
-        {% endif %}
-        {% if game.platforms.all %}
-            <p>
-                Plataformas:
-                {% for plataforma in game.platforms.all %}
-                    <span class="badge bg-dark">{{ plataforma }}</span>
-                {% endfor %}
-            </p>
-        {% endif %}
-        <hr>
-        <p>{{ game.description|render_markdown }}</p>
+            {% if game.platforms.all %}
+                <dt>Plataformas</dt>
+                <dd>
+                    {% for plataforma in game.platforms.all %}<span class="mgl-tag">{{ plataforma }}</span>{% endfor %}
+                </dd>
+            {% endif %}
+        </dl>
+
+        <div class="mgl-prose">{{ game.description|render_markdown }}</div>
     </div>
 </div>
 {% endblock %}

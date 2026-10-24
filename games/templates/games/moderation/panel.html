@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 
-{% block title %}Painel de Moderação — MyGameList{% endblock %}
+{% block title %}Moderação — MyGamesList{% endblock %}
 
 {% block content %}
-<h2 class="mb-4">Painel de Moderação</h2>
+<h1 class="mgl-page-title">Painel de moderação</h1>
 
 {% if reviews %}
 <div class="table-responsive">
@@ -15,7 +15,7 @@
                 <th>Nota</th>
                 <th>Título</th>
                 <th>Data</th>
-                <th></th>
+                <th><span class="visually-hidden">Ações</span></th>
             </tr>
         </thead>
         <tbody>
@@ -23,23 +23,25 @@
             <tr>
                 <td>{{ review.user.username }}</td>
                 <td>{{ review.game.title }}</td>
-                <td><span class="badge bg-primary">{{ review.get_rating_display }}</span></td>
+                <td><span class="mgl-rating"><b>{{ review.rating }}</b>{{ review.get_rating_display }}</span></td>
                 <td>{{ review.title }}</td>
                 <td>{{ review.created_at|date:"d/m/Y" }}</td>
-                <td class="d-flex gap-2">
-                    <a href="{% url 'games:review_details' review.game.pk review.pk %}" class="btn btn-sm btn-outline-secondary">
-                        Ver
-                    </a>
-                    <form method="post" action="{% url 'games:delete_review' review.game.pk review.pk %}">
-                        {% csrf_token %}
-                        <button
-                            type="submit"
-                            class="btn btn-sm btn-outline-danger"
-                            onclick="return confirm('Excluir a review de {{ review.user.username }}?');"
-                        >
-                            Excluir
-                        </button>
-                    </form>
+                <td>
+                    <div class="d-flex gap-2 justify-content-end">
+                        <a href="{% url 'games:review_details' review.game.pk review.pk %}" class="btn btn-sm btn-outline-secondary">
+                            Ver
+                        </a>
+                        <form method="post" action="{% url 'games:delete_review' review.game.pk review.pk %}">
+                            {% csrf_token %}
+                            <button
+                                type="submit"
+                                class="btn btn-sm btn-outline-danger"
+                                onclick="return confirm('Excluir a review de {{ review.user.username }}?');"
+                            >
+                                Excluir
+                            </button>
+                        </form>
+                    </div>
                 </td>
             </tr>
             {% endfor %}
@@ -68,6 +70,6 @@
 {% endif %}
 
 {% else %}
-<p class="text-muted">Nenhuma review cadastrada ainda.</p>
+<p class="mgl-empty">Nenhuma review publicada ainda.</p>
 {% endif %}
 {% endblock %}

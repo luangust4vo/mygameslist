@@ -1,0 +1,26 @@
+{% comment %}
+Cartão de jogo. Parâmetros: game (Game); status e status_label opcionais.
+{% endcomment %}
+<article class="mgl-card">
+    <div class="mgl-cover">
+        {% if game.cover_url %}
+            <img src="{{ game.cover_url }}" alt="" loading="lazy">
+        {% else %}
+            <span class="mgl-cover-fallback" aria-hidden="true">{{ game.title }}</span>
+        {% endif %}
+        {% if status %}
+            <span class="mgl-sticker status-{{ status }}">{{ status_label }}</span>
+        {% endif %}
+        {% if game.local_rating %}
+            <span class="mgl-score" aria-label="Nota {{ game.local_rating|floatformat:1 }} de 5">{{ game.local_rating|floatformat:1 }}</span>
+        {% endif %}
+    </div>
+    <div class="mgl-card-body">
+        <h3 class="mgl-card-title">
+            <a href="{% url 'games:game_details' game.pk %}" class="stretched-link">{{ game.title }}</a>
+        </h3>
+        {% if game.release_date %}
+            <span class="mgl-card-meta">{{ game.release_date|date:"Y" }}</span>
+        {% endif %}
+    </div>
+</article>
