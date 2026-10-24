@@ -151,7 +151,7 @@ class ReviewCreateView(LoginRequiredMixin, CreateView):
             messages.error(
                 request, "Adicione o jogo à sua lista antes de avaliá-lo."
             )
-            return redirect("games:game_details", pk=self.game.pk)
+            return redirect("games:add_to_list", pk=self.game.pk)
         return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):

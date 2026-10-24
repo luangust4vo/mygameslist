@@ -70,3 +70,52 @@ class ImportGameAccessTests(TestCase):
 
         self.assertRedirects(response, f"{reverse('games:login')}?next={url}")
         mock_import.assert_not_called()
+
+
+class ReviewRequiresGameInListTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username="jogador", password="senha123")
+        self.game = Game.objects.create(rawg_id=1, title="Hollow Knight")
+        self.client.login(username="jogador", password="senha123")
+        self.create_url = reverse("games:create_review", kwargs={"pk": self.game.pk})
+        self.data = {"title": "Ótimo jogo", "rating": 5, "body": ""}
+
+    def test_game_not_in_list_redirects_to_add_to_list(self):
+        response = self.client.post(self.create_url, self.data)
+
+        self.assertRedirects(
+            response, reverse("games:add_to_list", kwargs={"pk": self.game.pk})
+        )
+        self.assertFalse(Review.objects.filter(user=self.user, game=self.game).exists())
+        mensagens = [str(m) for m in get_messages(response.wsgi_request)]
+        self.assertIn("Adicione o jogo à sua lista antes de avaliá-lo.", mensagens)
+
+    def test_game_in_another_users_list_is_denied(self):
+        outro = User.objects.create_user(username="outro", password="senha123")
+        UserGameList.objects.create(user=outro, game=self.game, status="completed")
+
+        response = self.client.post(self.create_url, self.data)
+
+        self.assertRedirects(
+            response, reverse("games:add_to_list", kwargs={"pk": self.game.pk})
+        )
+        self.assertFalse(Review.objects.filter(user=self.user).exists())
+
+    def test_game_in_list_with_any_status_allows_review(self):
+        for status, _ in UserGameList.STATUS_CHOICES:
+            with self.subTest(status=status):
+                Review.objects.filter(user=self.user).delete()
+                UserGameList.objects.update_or_create(
+                    user=self.user, game=self.game, defaults={"status": status}
+                )
+
+                response = self.client.post(self.create_url, self.data)
+
+                review = Review.objects.get(user=self.user, game=self.game)
+                self.assertRedirects(
+                    response,
+                    reverse(
+                        "games:review_details",
+                        kwargs={"pk": self.game.pk, "review_pk": review.pk},
+                    ),
+                )
