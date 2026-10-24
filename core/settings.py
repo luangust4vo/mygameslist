@@ -20,9 +20,7 @@ DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
 ALLOWED_HOSTS = [
     host.strip()
-    for host in os.getenv("ALLOWED_HOSTS", "mygameslist-497823.rj.r.appspot.com").split(
-        ","
-    )
+    for host in os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1,[::1]").split(",")
     if host.strip()
 ]
 
