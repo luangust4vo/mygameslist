@@ -141,3 +141,18 @@ class ReviewActivityTests(TestCase):
         self.client.post(self.create_url, {"title": "", "rating": 5, "body": ""})
 
         self.assertFalse(Activity.objects.filter(action="reviewed").exists())
+
+
+class BaseTemplateTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username="jogador", password="senha123")
+        self.client.login(username="jogador", password="senha123")
+
+    def test_error_message_renders_as_danger_alert(self):
+        game = Game.objects.create(rawg_id=1, title="Hollow Knight")
+
+        response = self.client.get(
+            reverse("games:create_review", kwargs={"pk": game.pk}), follow=True
+        )
+
+        self.assertContains(response, "alert alert-danger")

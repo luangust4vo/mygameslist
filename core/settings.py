@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from django.contrib.messages import constants as messages
 from django.core.exceptions import ImproperlyConfigured
 from dotenv import load_dotenv
 from urllib.parse import urlparse, parse_qsl
@@ -54,6 +55,8 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 LOGIN_REDIRECT_URL = "games:home"
 LOGOUT_REDIRECT_URL = "games:home"
 LOGIN_URL = "games:login"
+
+MESSAGE_TAGS = {messages.ERROR: "danger"}
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
