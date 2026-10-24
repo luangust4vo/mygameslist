@@ -148,6 +148,12 @@ class BaseTemplateTests(TestCase):
         self.user = User.objects.create_user(username="jogador", password="senha123")
         self.client.login(username="jogador", password="senha123")
 
+    def test_username_link_points_to_password_change(self):
+        response = self.client.get(reverse("games:home"))
+
+        self.assertContains(response, f'href="{reverse("games:password_change")}"')
+        self.assertNotContains(response, 'href="admin"')
+
     def test_error_message_renders_as_danger_alert(self):
         game = Game.objects.create(rawg_id=1, title="Hollow Knight")
 
