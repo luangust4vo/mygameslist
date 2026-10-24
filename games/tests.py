@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from django.contrib.auth.models import User
 from django.contrib.messages import get_messages
 from django.test import TestCase
@@ -57,3 +59,14 @@ class ReviewDeleteGetTests(TestCase):
             response, reverse("games:reviews_list", kwargs={"pk": self.game.pk})
         )
         self.assertTrue(Review.objects.filter(pk=self.review.pk).exists())
+
+
+class ImportGameAccessTests(TestCase):
+    @patch("games.views.import_game")
+    def test_anonymous_is_redirected_to_login_without_calling_rawg(self, mock_import):
+        url = reverse("games:import_game", kwargs={"id": 3328})
+
+        response = self.client.post(url)
+
+        self.assertRedirects(response, f"{reverse('games:login')}?next={url}")
+        mock_import.assert_not_called()
