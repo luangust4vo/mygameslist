@@ -26,13 +26,13 @@ O MyGamesList é um site, no estilo do MyAnimeList, em que o jogador monta a sua
    - gêneros traduzidos para português na exibição **(existe)**;
    - tradução por IA quando a Steam não tem descrição em português **(novo)**;
    - botão do Moderador para pedir nova tradução por IA **(novo)**.
-4. Minha lista com status (Quero Jogar, Jogando, Pausado, Zerado, Platinado, Dropado) **(existe)**, com filtros por status, gênero e plataforma (django-filter) e paginação que preserva os filtros pela templatetag `url_pagina` **(existe)**; campos de gênero e plataforma com Select2 **(novo)**.
+4. Minha lista com status (Quero Jogar, Jogando, Pausado, Zerado, Platinado, Dropado) **(existe)**, com filtros por status, gênero e plataforma (django-filter) e paginação que preserva os filtros pela templatetag `url_pagina`, com campos de gênero e plataforma em Select2 **(existe)**.
 5. Reviews com nota de 0 a 5, título e comentário: criar, editar e excluir **(existe)**; tela "minhas reviews" **(novo, depois de 13/11)**.
 6. Página inicial com "Jogos em destaque" (maior nota RAWG), "Mais bem avaliados" (nota local), "Chegaram agora" e feed de atividades, incluindo a de review **(existe)**.
 7. Preferências do jogador: logo após o cadastro, o sistema pede (sem obrigar) que o jogador escolha gêneros e plataformas de que gosta; o jogador pode pular e editar depois **(novo, depois de 13/11)**.
 8. Recomendações de jogos com base nas preferências e no que o jogador avaliou e listou, cada uma com o motivo ("porque você gosta de RPG e deu nota 5 a ...") **(novo, depois de 13/11)**.
 9. Painel de moderação, com filtros por jogo, autor e nota (django-filter) e paginação que preserva os filtros **(existe)**.
-10. Confirmação de remoção da lista, exclusão de review e "Limpar conversa" em modal com Bootbox; a página de confirmação continua funcionando sem JavaScript **(novo)**.
+10. Confirmação de remoção da lista e de exclusão de review em modal com Bootbox; a página de confirmação da lista continua funcionando sem JavaScript **(existe)**. O mesmo vale para "Limpar conversa" do assistente **(novo)**.
 11. Assistente de IA que responde sobre jogos e sobre o uso do site, com histórico por usuário, em `assistente/` **(novo)**.
 12. App `ia`: configuração editável, auditoria de cada chamada, cota mensal de tokens por usuário, e as telas de requisições, configuração (com "Testar conexão"), IA por usuário e meu consumo **(novo)**.
 13. Comando para popular o catálogo com jogos populares por gênero e carregar as listas de gêneros e plataformas do RAWG **(novo, depois de 13/11)**.
@@ -97,7 +97,7 @@ O MyGamesList é um site, no estilo do MyAnimeList, em que o jogador monta a sua
 
 1. Atualizar esta proposta e criar a migration do grupo Moderador **(existe)**.
 2. django-filter na Minha lista e no painel de moderação, com a templatetag de paginação **(existe)**.
-3. Select2 e Bootbox **(novo)**.
+3. Select2 e Bootbox **(existe)**.
 4. App `ia`: models (configuração, auditoria e cota), `chamar_ia` e as quatro telas **(novo)**.
 5. Tradução por IA como alternativa à Steam e o botão de nova tradução do Moderador **(novo)**.
 6. Assistente **(novo)**.
