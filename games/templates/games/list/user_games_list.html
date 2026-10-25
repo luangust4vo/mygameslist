@@ -31,7 +31,13 @@
                 <a href="{% url 'games:edit_list_item' item.pk %}" class="btn btn-sm btn-outline-primary">
                     Mudar status
                 </a>
-                <a href="{% url 'games:remove_from_list' item.pk %}" class="btn btn-sm btn-outline-danger">
+                <a
+                    href="{% url 'games:remove_from_list' item.pk %}"
+                    class="btn btn-sm btn-outline-danger"
+                    data-confirmar="{{ item.game.title }} sai da sua lista, junto com o status marcado."
+                    data-confirmar-titulo="Remover da lista?"
+                    data-confirmar-botao="Remover da lista"
+                >
                     Remover
                 </a>
             </div>

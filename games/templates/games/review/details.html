@@ -21,41 +21,18 @@
             <a href="{% url 'games:edit_review' review.game.pk review.pk %}" class="btn btn-outline-primary">
                 Editar
             </a>
-            <button
-                type="button"
-                class="btn btn-outline-danger"
-                data-bs-toggle="modal"
-                data-bs-target="#modalExcluir"
+            <form
+                method="post"
+                action="{% url 'games:delete_review' review.game.pk review.pk %}"
+                data-confirmar="A review “{{ review.title }}” será apagada e não poderá ser recuperada."
+                data-confirmar-titulo="Excluir review?"
+                data-confirmar-botao="Excluir review"
             >
-                Excluir
-            </button>
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline-danger">Excluir</button>
+            </form>
         </div>
         {% endif %}
     </div>
 </div>
-
-{% if request.user == review.user %}
-<div class="modal fade" id="modalExcluir" tabindex="-1" aria-labelledby="modalExcluirTitulo" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title h4" id="modalExcluirTitulo">Excluir review?</h2>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
-            </div>
-            <div class="modal-body">
-                A review <strong>{{ review.title }}</strong> será apagada e não poderá ser recuperada.
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
-                    Cancelar
-                </button>
-                <form method="post" action="{% url 'games:delete_review' review.game.pk review.pk %}">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-danger">Excluir review</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-{% endif %}
 {% endblock %}

@@ -34,15 +34,15 @@
                         <a href="{% url 'games:review_details' review.game.pk review.pk %}" class="btn btn-sm btn-outline-secondary">
                             Ver
                         </a>
-                        <form method="post" action="{% url 'games:delete_review' review.game.pk review.pk %}">
+                        <form
+                            method="post"
+                            action="{% url 'games:delete_review' review.game.pk review.pk %}"
+                            data-confirmar="A review de {{ review.user.username }} sobre {{ review.game.title }} será apagada e não poderá ser recuperada."
+                            data-confirmar-titulo="Excluir review?"
+                            data-confirmar-botao="Excluir review"
+                        >
                             {% csrf_token %}
-                            <button
-                                type="submit"
-                                class="btn btn-sm btn-outline-danger"
-                                onclick="return confirm('Excluir a review de {{ review.user.username }}?');"
-                            >
-                                Excluir
-                            </button>
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Excluir</button>
                         </form>
                     </div>
                 </td>

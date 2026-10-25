@@ -36,6 +36,8 @@ class UserGameListFilter(django_filters.FilterSet):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.form.fields["genero"].label_from_instance = lambda genero: traduzir_genero(genero.name)
+        for nome in ("genero", "plataforma"):
+            self.form.fields[nome].widget.attrs["data-buscavel"] = ""
 
 
 class ReviewModerationFilter(django_filters.FilterSet):

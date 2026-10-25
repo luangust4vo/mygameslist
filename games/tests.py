@@ -654,3 +654,65 @@ class UrlPaginaTagTests(TestCase):
 
     def test_sem_filtros_gera_so_a_pagina(self):
         self.assertEqual(self.renderizar(""), "?page=3")
+
+
+class PluginsJqueryTests(TestCase):
+    def setUp(self):
+        self.alice = User.objects.create_user("alice", password="senha12345")
+        self.moderador = User.objects.create_user("moderador", password="senha12345")
+        self.moderador.groups.add(Group.objects.get(name="Moderador"))
+        self.jogo = Game.objects.create(rawg_id=1, title="Hollow Knight")
+        self.jogo.genres.add(Genre.objects.create(rawg_id=4, name="Action"))
+        self.jogo.platforms.add(Platform.objects.create(rawg_id=4, name="PC"))
+        self.item = UserGameList.objects.create(user=self.alice, game=self.jogo, status="playing")
+        self.review = Review.objects.create(user=self.alice, game=self.jogo, rating=5, title="Obra-prima")
+        self.client.force_login(self.alice)
+
+    def test_base_carrega_jquery_select2_e_bootbox(self):
+        response = self.client.get(reverse("games:home"))
+
+        self.assertContains(response, "jquery@3.7.1/dist/jquery.min.js")
+        self.assertContains(response, "select2@4.1.0-rc.0/dist/js/select2.min.js")
+        self.assertContains(response, "bootbox@6.0.0/dist/bootbox.min.js")
+        self.assertContains(response, "js/mgl.js")
+
+    def test_busca_select2_so_nos_campos_de_genero_e_plataforma(self):
+        response = self.client.get(reverse("games:my_list"))
+        campos = response.context["filter"].form.fields
+
+        self.assertIn("data-buscavel", campos["genero"].widget.attrs)
+        self.assertIn("data-buscavel", campos["plataforma"].widget.attrs)
+        self.assertNotIn("data-buscavel", campos["status"].widget.attrs)
+        self.assertContains(response, 'data-buscavel', count=2)
+
+    def test_remover_da_lista_pede_confirmacao_e_mantem_o_link(self):
+        response = self.client.get(reverse("games:my_list"))
+
+        self.assertContains(response, f'href="{reverse("games:remove_from_list", args=[self.item.pk])}"')
+        self.assertContains(response, 'data-confirmar-titulo="Remover da lista?"')
+
+    def test_sem_javascript_a_pagina_de_confirmacao_continua_funcionando(self):
+        url = reverse("games:remove_from_list", args=[self.item.pk])
+
+        pagina = self.client.get(url)
+        response = self.client.post(url)
+
+        self.assertContains(pagina, "Remover da lista?")
+        self.assertRedirects(response, reverse("games:my_list"))
+        self.assertFalse(UserGameList.objects.filter(pk=self.item.pk).exists())
+
+    def test_excluir_review_na_pagina_da_review_usa_bootbox(self):
+        response = self.client.get(
+            reverse("games:review_details", args=[self.jogo.pk, self.review.pk])
+        )
+
+        self.assertContains(response, 'data-confirmar-titulo="Excluir review?"')
+        self.assertNotContains(response, 'id="modalExcluir"')
+
+    def test_painel_de_moderacao_usa_bootbox_no_lugar_do_confirm(self):
+        self.client.force_login(self.moderador)
+
+        response = self.client.get(reverse("games:moderation_panel"))
+
+        self.assertContains(response, 'data-confirmar-titulo="Excluir review?"')
+        self.assertNotContains(response, "onclick=")
