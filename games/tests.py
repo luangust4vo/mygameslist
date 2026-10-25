@@ -1,6 +1,6 @@
 from unittest.mock import patch
 
-from django.contrib.auth.models import User
+from django.contrib.auth.models import Group, User
 from django.contrib.messages import get_messages
 from django.test import TestCase
 from django.urls import reverse
@@ -453,3 +453,8 @@ class HomeFeaturedGamesTests(TestCase):
         response = self.client.get(reverse("games:home"))
 
         self.assertNotContains(response, "Jogos em destaque")
+
+
+class ModeradorGroupMigrationTests(TestCase):
+    def test_moderador_group_exists_after_migrations(self):
+        self.assertTrue(Group.objects.filter(name="Moderador").exists())
