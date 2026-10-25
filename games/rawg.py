@@ -31,3 +31,14 @@ def get_details(id):
     if response.status_code == 200:
         return response.json()
     return None
+
+
+def get_stores(id):
+    response = requests.get(
+        f'{BASE_URL}/games/{id}/stores',
+        params=get_params(),
+        timeout=10,
+    )
+    if response.status_code == 200:
+        return response.json()
+    return None

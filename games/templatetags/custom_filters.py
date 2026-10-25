@@ -2,6 +2,8 @@ import markdown
 from django import template
 from django.utils.safestring import mark_safe
 
+from games.sanitize import description_to_html
+
 register = template.Library()
 
 
@@ -17,6 +19,11 @@ def pretty_username(value):
 @register.filter
 def render_markdown(text):
     return mark_safe(markdown.markdown(text))
+
+
+@register.filter
+def descricao(text):
+    return mark_safe(description_to_html(text))
 
 
 @register.filter

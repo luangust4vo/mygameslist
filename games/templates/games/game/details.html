@@ -65,7 +65,16 @@
             {% endif %}
         </dl>
 
-        <div class="mgl-prose">{{ game.description|render_markdown }}</div>
+        {% if game.description_pt %}
+            <div class="descricao-jogo" tabindex="0" role="region" aria-label="Descrição do jogo">
+                {{ game.description_pt|descricao }}
+            </div>
+        {% elif game.description %}
+            <p class="text-muted small fst-italic">Descrição original em inglês</p>
+            <div class="descricao-jogo" lang="en" tabindex="0" role="region" aria-label="Descrição do jogo">
+                {{ game.description|descricao }}
+            </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

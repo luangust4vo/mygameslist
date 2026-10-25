@@ -667,6 +667,59 @@ a {
     margin-bottom: 1rem;
 }
 
+/* Descrição do jogo: no celular rola dentro do bloco, não a página */
+.descricao-jogo {
+    max-width: var(--mgl-measure);
+    padding: 1rem 1.25rem;
+    background: var(--mgl-panel);
+    border: 1px solid var(--mgl-line);
+    border-radius: var(--mgl-radius-panel);
+    text-align: justify;
+    hyphens: auto;
+    line-height: 1.6;
+}
+
+.descricao-jogo:focus-visible {
+    outline: none;
+    box-shadow: var(--mgl-focus);
+}
+
+.descricao-jogo p,
+.descricao-jogo ul,
+.descricao-jogo ol {
+    margin-bottom: 1rem;
+}
+
+.descricao-jogo > :last-child {
+    margin-bottom: 0;
+}
+
+.descricao-jogo h2,
+.descricao-jogo h3,
+.descricao-jogo h4 {
+    text-align: left;
+    font-weight: 700;
+    color: var(--mgl-accent);
+    margin: 1.5rem 0 0.5rem;
+}
+
+.descricao-jogo > :is(h2, h3, h4):first-child {
+    margin-top: 0;
+}
+
+.descricao-jogo h2 { font-size: var(--mgl-size-lg); }
+.descricao-jogo h3 { font-size: var(--mgl-size-md); }
+.descricao-jogo h4 { font-size: var(--mgl-size-sm); }
+
+.descricao-jogo ul,
+.descricao-jogo ol {
+    padding-left: 1.5rem;
+}
+
+.descricao-jogo li {
+    margin-bottom: 0.25rem;
+}
+
 .mgl-review {
     border-bottom: 1px solid var(--mgl-line);
     padding-block: 1.25rem;
@@ -713,6 +766,11 @@ a {
     .mgl-nav .nav-link[aria-current="page"]::after {
         right: auto;
         width: 2rem;
+    }
+
+    .descricao-jogo {
+        max-height: 60vh;
+        overflow-y: auto;
     }
 }
 

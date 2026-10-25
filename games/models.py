@@ -30,9 +30,25 @@ class Platform(models.Model):
 
 
 class Game(models.Model):
+    DESCRIPTION_PT_SOURCE_CHOICES = [
+        ("", "Nenhuma"),
+        ("steam", "Steam"),
+        ("ia", "IA"),
+    ]
+
     rawg_id = models.IntegerField(unique=True)
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True, default="")
+    description_pt = models.TextField(
+        blank=True, default="", verbose_name="Descrição em português"
+    )
+    description_pt_source = models.CharField(
+        max_length=10,
+        choices=DESCRIPTION_PT_SOURCE_CHOICES,
+        blank=True,
+        default="",
+        verbose_name="Fonte da descrição em português",
+    )
     cover_url = models.URLField(blank=True, default="")
     release_date = models.DateField(null=True, blank=True)
     rawg_rating = models.FloatField(default=0)
