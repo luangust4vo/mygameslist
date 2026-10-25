@@ -46,7 +46,11 @@ class ReviewModerationFilter(django_filters.FilterSet):
         field_name="user__username", lookup_expr="icontains", label="Autor"
     )
     nota = django_filters.ChoiceFilter(
-        field_name="rating", choices=Review.RATING_CHOICES, label="Nota", empty_label="Todas"
+        field_name="rating",
+        lookup_expr="lte",
+        choices=Review.RATING_CHOICES,
+        label="Nota até",
+        empty_label="Todas",
     )
 
     class Meta:
