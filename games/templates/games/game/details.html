@@ -56,7 +56,7 @@
             {% if game.genres.all %}
                 <dt>Gêneros</dt>
                 <dd>
-                    {% for genero in game.genres.all %}<span class="mgl-tag">{{ genero }}</span>{% endfor %}
+                    {% for genero in game.genres.all %}<span class="mgl-tag">{{ genero|genero_pt }}</span>{% endfor %}
                 </dd>
             {% endif %}
             {% if game.platforms.all %}

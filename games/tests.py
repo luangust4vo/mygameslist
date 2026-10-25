@@ -7,8 +7,8 @@ from django.urls import reverse
 
 import requests
 
-from .models import Activity, Game, Review, UserGameList
-from .templatetags.custom_filters import descricao
+from .models import Activity, Game, Genre, Review, UserGameList
+from .templatetags.custom_filters import descricao, genero_pt
 from .services import import_game
 from .steam import get_description_pt
 
@@ -367,3 +367,25 @@ class DescricaoFilterTests(TestCase):
         html = descricao("# Título\n\n- Item\n\n[link](https://x.y) e ![img](https://x.y/a.png)")
 
         self.assertEqual(html, "<h2>Título</h2>\n<ul>\n<li>Item</li>\n</ul>\n<p>link e </p>")
+
+
+class GeneroPtFilterTests(TestCase):
+    def test_translates_known_genre(self):
+        self.assertEqual(genero_pt(Genre(rawg_id=4, name="Action")), "Ação")
+        self.assertEqual(genero_pt("Massively Multiplayer"), "Multijogador massivo")
+
+    def test_keeps_original_name_without_translation(self):
+        self.assertEqual(genero_pt("Metroidvania"), "Metroidvania")
+
+    def test_game_page_shows_translated_genres(self):
+        game = Game.objects.create(rawg_id=1, title="Hollow Knight")
+        game.genres.add(
+            Genre.objects.create(rawg_id=4, name="Action"),
+            Genre.objects.create(rawg_id=999, name="Metroidvania"),
+        )
+
+        response = self.client.get(reverse("games:game_details", kwargs={"pk": game.pk}))
+
+        self.assertContains(response, '<span class="mgl-tag">Ação</span>', html=True)
+        self.assertContains(response, '<span class="mgl-tag">Metroidvania</span>', html=True)
+        self.assertNotContains(response, '<span class="mgl-tag">Action</span>', html=True)
