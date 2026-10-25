@@ -7,7 +7,7 @@ Site no estilo MyAnimeList para jogos: lista pessoal com status, reviews e moder
 - Python 3.12, Django 5.2, Crispy Forms (`crispy_bootstrap5`), Markdown
 - Banco: PostgreSQL em produção (via `DATABASE_URL`), SQLite local (`db.sqlite3`, usado quando `DATABASE_URL` está vazia)
 - Deploy: Google App Engine (`app.yaml`, gunicorn); segredos no Secret Manager
-- Projeto em `core/`; todo o domínio no app `games/` (`rawg.py` = cliente da API, `services.py` = importação)
+- Projeto em `core/`; todo o domínio no app `games/` (`rawg.py` = cliente da API, `steam.py` = descrição em português da Steam, `sanitize.py` = HTML permitido nas descrições, `services.py` = importação)
 
 ## Rodar
 
@@ -30,7 +30,7 @@ python manage.py check
 python manage.py test games
 ```
 
-Testes ficam em `games/tests.py` e usam `django.test.TestCase` com o `Client`. Não chame a API RAWG nos testes: use `unittest.mock.patch` em `games.views.import_game` ou em `games.rawg`.
+Testes ficam em `games/tests.py` e usam `django.test.TestCase` com o `Client`. Não chame a API RAWG nem a Steam nos testes: use `unittest.mock.patch` em `games.views.import_game`, `games.services.get_details`/`get_stores`/`get_description_pt` ou em `games.steam.requests.get`.
 
 ## Convenções
 
