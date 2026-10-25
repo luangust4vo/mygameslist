@@ -42,6 +42,17 @@
 
 <div class="row g-5">
     <div class="col-lg-8">
+        {% if featured_games %}
+            <section class="mgl-section" aria-labelledby="jogos-destaque">
+                <h2 class="mgl-section-title" id="jogos-destaque">Jogos em destaque</h2>
+                <div class="row row-cols-2 row-cols-md-3 g-3">
+                    {% for game in featured_games %}
+                        <div class="col">{% include "game/_card.html" with game=game show_genres=True %}</div>
+                    {% endfor %}
+                </div>
+            </section>
+        {% endif %}
+
         {% if top_rated_games|length > 1 %}
             <section class="mgl-section" aria-labelledby="melhores">
                 <h2 class="mgl-section-title" id="melhores">Mais bem avaliados</h2>

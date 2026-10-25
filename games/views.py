@@ -32,6 +32,11 @@ class HomeView(TemplateView):
         context["top_rated_games"] = Game.objects.filter(local_rating__gt=0).order_by(
             "-local_rating"
         )[:6]
+        context["featured_games"] = (
+            Game.objects.filter(rawg_rating__gt=0)
+            .prefetch_related("genres")
+            .order_by("-rawg_rating")[:6]
+        )
         context["recent_games"] = Game.objects.order_by("-id")[:6]
         return context
 

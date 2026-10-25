@@ -1,6 +1,8 @@
 {% comment %}
-Cartão de jogo. Parâmetros: game (Game); status e status_label opcionais.
+Cartão de jogo. Parâmetros: game (Game); status, status_label e show_genres opcionais.
+Com show_genres, prefira um queryset com prefetch_related("genres").
 {% endcomment %}
+{% load custom_filters %}
 <article class="mgl-card">
     <div class="mgl-cover">
         {% if game.cover_url %}
@@ -21,6 +23,9 @@ Cartão de jogo. Parâmetros: game (Game); status e status_label opcionais.
         </h3>
         {% if game.release_date %}
             <span class="mgl-card-meta">{{ game.release_date|date:"Y" }}</span>
+        {% endif %}
+        {% if show_genres %}
+            <span class="mgl-card-meta mgl-card-genres">{% for genero in game.genres.all|slice:":2" %}{{ genero|genero_pt }}{% if not forloop.last %} · {% endif %}{% endfor %}</span>
         {% endif %}
     </div>
 </article>

@@ -389,3 +389,67 @@ class GeneroPtFilterTests(TestCase):
         self.assertContains(response, '<span class="mgl-tag">Ação</span>', html=True)
         self.assertContains(response, '<span class="mgl-tag">Metroidvania</span>', html=True)
         self.assertNotContains(response, '<span class="mgl-tag">Action</span>', html=True)
+
+
+class HomeFeaturedGamesTests(TestCase):
+    def setUp(self):
+        self.action = Genre.objects.create(rawg_id=4, name="Action")
+        self.witcher = Game.objects.create(rawg_id=1, title="The Witcher 3", rawg_rating=4.6)
+        self.witcher.genres.add(self.action)
+        self.portal = Game.objects.create(rawg_id=2, title="Portal 2", rawg_rating=4.5)
+        self.unrated = Game.objects.create(rawg_id=3, title="Sem Nota", rawg_rating=0)
+
+    def test_visitor_sees_featured_games_ordered_by_rawg_rating(self):
+        response = self.client.get(reverse("games:home"))
+
+        self.assertContains(response, "Jogos em destaque")
+        self.assertEqual(list(response.context["featured_games"]), [self.witcher, self.portal])
+        self.assertContains(response, "Ação")
+
+    def test_logged_user_sees_featured_games(self):
+        User.objects.create_user(username="jogador", password="senha123")
+        self.client.login(username="jogador", password="senha123")
+
+        response = self.client.get(reverse("games:home"))
+
+        self.assertContains(response, "Jogos em destaque")
+        self.assertContains(response, "The Witcher 3")
+
+    def test_featured_games_limited_to_six(self):
+        for i in range(10, 17):
+            Game.objects.create(rawg_id=i, title=f"Jogo {i}", rawg_rating=4.0)
+
+        response = self.client.get(reverse("games:home"))
+
+        self.assertEqual(len(response.context["featured_games"]), 6)
+
+    def test_genres_are_prefetched(self):
+        for i in range(10, 14):
+            Game.objects.create(rawg_id=i, title=f"Jogo {i}", rawg_rating=4.0).genres.add(self.action)
+
+        response = self.client.get(reverse("games:home"))
+
+        with self.assertNumQueries(0):
+            for game in response.context["featured_games"]:
+                list(game.genres.all())
+
+    def test_hides_top_rated_section_without_local_ratings(self):
+        response = self.client.get(reverse("games:home"))
+
+        self.assertNotContains(response, "Mais bem avaliados")
+
+    def test_shows_top_rated_section_with_local_ratings(self):
+        user = User.objects.create_user(username="jogador", password="senha123")
+        Review.objects.create(user=user, game=self.witcher, rating=5, title="Ótimo")
+        Review.objects.create(user=user, game=self.portal, rating=4, title="Bom")
+
+        response = self.client.get(reverse("games:home"))
+
+        self.assertContains(response, "Mais bem avaliados")
+
+    def test_hides_featured_section_with_empty_catalog(self):
+        Game.objects.all().delete()
+
+        response = self.client.get(reverse("games:home"))
+
+        self.assertNotContains(response, "Jogos em destaque")

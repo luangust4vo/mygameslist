@@ -451,6 +451,10 @@ a {
     font-size: var(--mgl-size-xs);
 }
 
+.mgl-card-genres {
+    display: block;
+}
+
 .mgl-card-actions {
     position: relative;
     z-index: 2;
