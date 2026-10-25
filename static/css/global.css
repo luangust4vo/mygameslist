@@ -667,6 +667,16 @@ a {
     margin-bottom: 1rem;
 }
 
+/* Página do jogo: capa e ações ficam paradas enquanto as informações rolam */
+@media (min-width: 768px) {
+    .jogo-lateral {
+        position: sticky;
+        top: var(--mgl-gap);
+        max-height: calc(100vh - 2 * var(--mgl-gap));
+        overflow-y: auto;
+    }
+}
+
 /* Descrição do jogo: no celular rola dentro do bloco, não a página */
 .descricao-jogo {
     max-width: var(--mgl-measure);

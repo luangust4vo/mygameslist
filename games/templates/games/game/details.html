@@ -6,32 +6,34 @@
 {% block content %}
 <div class="row g-4 g-lg-5">
     <div class="col-md-5 col-lg-4">
-        <div class="mgl-cover">
-            {% if game.cover_url %}
-                <img src="{{ game.cover_url }}" alt="">
-            {% else %}
-                <span class="mgl-cover-fallback" aria-hidden="true">{{ game.title }}</span>
-            {% endif %}
-            {% if user_list_item %}
-                <span class="mgl-sticker status-{{ user_list_item.status }}">{{ user_list_item.get_status_display }}</span>
-            {% endif %}
-        </div>
-
-        <div class="d-grid gap-2 mt-3">
-            {% if request.user.is_authenticated %}
-                {% if user_list_item %}
-                    <a href="{% url 'games:edit_list_item' user_list_item.pk %}" class="btn btn-outline-primary">
-                        Mudar status
-                    </a>
+        <div class="jogo-lateral">
+            <div class="mgl-cover">
+                {% if game.cover_url %}
+                    <img src="{{ game.cover_url }}" alt="">
                 {% else %}
-                    <a href="{% url 'games:add_to_list' game.pk %}" class="btn btn-primary">
-                        Adicionar à lista
-                    </a>
+                    <span class="mgl-cover-fallback" aria-hidden="true">{{ game.title }}</span>
                 {% endif %}
-            {% endif %}
-            <a href="{% url 'games:reviews_list' game.pk %}" class="btn btn-outline-secondary">
-                Ver reviews
-            </a>
+                {% if user_list_item %}
+                    <span class="mgl-sticker status-{{ user_list_item.status }}">{{ user_list_item.get_status_display }}</span>
+                {% endif %}
+            </div>
+
+            <div class="d-grid gap-2 mt-3">
+                {% if request.user.is_authenticated %}
+                    {% if user_list_item %}
+                        <a href="{% url 'games:edit_list_item' user_list_item.pk %}" class="btn btn-outline-primary">
+                            Mudar status
+                        </a>
+                    {% else %}
+                        <a href="{% url 'games:add_to_list' game.pk %}" class="btn btn-primary">
+                            Adicionar à lista
+                        </a>
+                    {% endif %}
+                {% endif %}
+                <a href="{% url 'games:reviews_list' game.pk %}" class="btn btn-outline-secondary">
+                    Ver reviews
+                </a>
+            </div>
         </div>
     </div>
 
