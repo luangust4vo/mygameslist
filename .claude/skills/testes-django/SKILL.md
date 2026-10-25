@@ -29,7 +29,7 @@ Rode também `python manage.py check` antes de entregar.
   self.jogo = Game.objects.create(rawg_id=1, title="Jogo X")
   ```
 - Entre com `self.client.force_login(self.alice)`. Não precisa passar pela tela de login.
-- O grupo `Moderador` **não** é criado por migration, então o teste cria: `Group.objects.create(name="Moderador")` e adiciona o usuário.
+- O grupo `Moderador` é criado pela migration `0004`, então já existe no banco de teste: use `Group.objects.get(name="Moderador")` e adicione o usuário.
 - Use `reverse("games:nome_da_rota", kwargs={...})` em vez de escrever a URL.
 - O `seed_test_data.py` é um script manual, não serve para testes automatizados.
 
