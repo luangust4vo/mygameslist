@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     # External Apps
     "crispy_forms",
     "crispy_bootstrap5",
+    "django_filters",
 ]
 
 if DEBUG:

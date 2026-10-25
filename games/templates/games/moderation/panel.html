@@ -5,6 +5,9 @@
 {% block content %}
 <h1 class="mgl-page-title">Painel de moderação</h1>
 
+{% if has_reviews %}
+{% include "comum/_filtros.html" with filtro=filter rotulo="Filtrar reviews" %}
+
 {% if reviews %}
 <div class="table-responsive">
     <table class="table align-middle">
@@ -49,24 +52,10 @@
     </table>
 </div>
 
-{% if is_paginated %}
-<nav class="mt-4">
-    <ul class="pagination justify-content-center">
-        {% if page_obj.has_previous %}
-            <li class="page-item">
-                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Anterior</a>
-            </li>
-        {% endif %}
-        <li class="page-item disabled">
-            <span class="page-link">{{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
-        </li>
-        {% if page_obj.has_next %}
-            <li class="page-item">
-                <a class="page-link" href="?page={{ page_obj.next_page_number }}">Próxima</a>
-            </li>
-        {% endif %}
-    </ul>
-</nav>
+{% include "comum/_paginacao.html" with page_obj=page_obj rotulo="Páginas de reviews" %}
+
+{% else %}
+<p class="mgl-empty">Nenhuma review combina com esses filtros. <a href="{{ request.path }}">Limpar filtros</a></p>
 {% endif %}
 
 {% else %}

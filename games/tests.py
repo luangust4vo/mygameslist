@@ -2,12 +2,13 @@ from unittest.mock import patch
 
 from django.contrib.auth.models import Group, User
 from django.contrib.messages import get_messages
-from django.test import TestCase
+from django.template import Context, Template
+from django.test import RequestFactory, TestCase
 from django.urls import reverse
 
 import requests
 
-from .models import Activity, Game, Genre, Review, UserGameList
+from .models import Activity, Game, Genre, Platform, Review, UserGameList
 from .templatetags.custom_filters import descricao, genero_pt
 from .services import import_game
 from .steam import get_description_pt
@@ -458,3 +459,197 @@ class HomeFeaturedGamesTests(TestCase):
 class ModeradorGroupMigrationTests(TestCase):
     def test_moderador_group_exists_after_migrations(self):
         self.assertTrue(Group.objects.filter(name="Moderador").exists())
+
+
+class MinhaListaFiltroTests(TestCase):
+    def setUp(self):
+        self.alice = User.objects.create_user("alice", password="senha12345")
+        self.bob = User.objects.create_user("bob", password="senha12345")
+        self.acao = Genre.objects.create(rawg_id=4, name="Action")
+        self.rpg = Genre.objects.create(rawg_id=5, name="RPG")
+        self.estrategia = Genre.objects.create(rawg_id=10, name="Strategy")
+        self.pc = Platform.objects.create(rawg_id=4, name="PC")
+        self.ps5 = Platform.objects.create(rawg_id=187, name="PlayStation 5")
+
+        self.witcher = Game.objects.create(rawg_id=1, title="The Witcher 3")
+        self.witcher.genres.add(self.acao, self.rpg)
+        self.witcher.platforms.add(self.pc)
+        self.portal = Game.objects.create(rawg_id=2, title="Portal 2")
+        self.portal.genres.add(self.acao)
+        self.portal.platforms.add(self.ps5)
+        self.celeste = Game.objects.create(rawg_id=3, title="Celeste")
+        self.xcom = Game.objects.create(rawg_id=4, title="XCOM 2")
+        self.xcom.genres.add(self.estrategia)
+
+        UserGameList.objects.create(user=self.alice, game=self.witcher, status="completed")
+        UserGameList.objects.create(user=self.alice, game=self.portal, status="playing")
+        UserGameList.objects.create(user=self.alice, game=self.celeste, status="wishlist")
+        UserGameList.objects.create(user=self.bob, game=self.xcom, status="dropped")
+
+        self.url = reverse("games:my_list")
+        self.client.force_login(self.alice)
+
+    def titulos(self, response):
+        return {item.game.title for item in response.context["items"]}
+
+    def test_anonimo_e_redirecionado_ao_login(self):
+        self.client.logout()
+
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(reverse("games:login"), response.url)
+
+    def test_sem_filtro_mostra_so_os_itens_do_usuario(self):
+        response = self.client.get(self.url)
+
+        self.assertEqual(self.titulos(response), {"The Witcher 3", "Portal 2", "Celeste"})
+
+    def test_filtro_por_status_mostra_so_esse_status(self):
+        response = self.client.get(self.url, {"status": "completed"})
+
+        self.assertEqual(self.titulos(response), {"The Witcher 3"})
+
+    def test_filtro_por_genero_mostra_jogos_do_genero(self):
+        response = self.client.get(self.url, {"genero": self.acao.pk})
+
+        self.assertEqual(self.titulos(response), {"The Witcher 3", "Portal 2"})
+
+    def test_filtro_por_plataforma_mostra_jogos_da_plataforma(self):
+        response = self.client.get(self.url, {"plataforma": self.ps5.pk})
+
+        self.assertEqual(self.titulos(response), {"Portal 2"})
+
+    def test_filtros_combinados_se_somam(self):
+        response = self.client.get(self.url, {"genero": self.acao.pk, "status": "playing"})
+
+        self.assertEqual(self.titulos(response), {"Portal 2"})
+
+    def test_opcoes_de_genero_sao_so_da_lista_do_usuario(self):
+        response = self.client.get(self.url)
+
+        opcoes = set(response.context["filter"].form.fields["genero"].queryset)
+        self.assertEqual(opcoes, {self.acao, self.rpg})
+
+    def test_genero_do_outro_usuario_e_rejeitado(self):
+        response = self.client.get(self.url, {"genero": self.estrategia.pk})
+
+        self.assertEqual(self.titulos(response), set())
+
+    def test_generos_aparecem_traduzidos_no_filtro(self):
+        response = self.client.get(self.url)
+
+        self.assertContains(response, f'<option value="{self.acao.pk}">Ação</option>', html=True)
+
+    def test_filtro_sem_resultado_mostra_aviso(self):
+        response = self.client.get(self.url, {"status": "platinum"})
+
+        self.assertContains(response, "Nenhum jogo da sua lista combina com esses filtros.")
+
+    def test_botao_limpar_so_aparece_com_filtro_preenchido(self):
+        sem_filtro = self.client.get(self.url, {"page": 1})
+        com_filtro = self.client.get(self.url, {"status": "completed"})
+
+        self.assertNotContains(sem_filtro, ">Limpar</a>")
+        self.assertContains(com_filtro, ">Limpar</a>")
+
+    def test_lista_vazia_nao_mostra_filtros(self):
+        UserGameList.objects.filter(user=self.alice).delete()
+
+        response = self.client.get(self.url)
+
+        self.assertContains(response, "Sua lista está vazia")
+        self.assertNotContains(response, 'aria-label="Filtrar minha lista"')
+
+    def test_paginacao_preserva_filtros(self):
+        for i in range(10, 23):
+            jogo = Game.objects.create(rawg_id=i, title=f"Jogo {i}")
+            UserGameList.objects.create(user=self.alice, game=jogo, status="completed")
+
+        response = self.client.get(self.url, {"status": "completed"})
+
+        self.assertEqual(response.context["page_obj"].paginator.count, 14)
+        self.assertContains(response, 'href="?status=completed&amp;page=2"')
+
+
+class PainelModeracaoFiltroTests(TestCase):
+    def setUp(self):
+        self.moderador = User.objects.create_user("moderador", password="senha12345")
+        self.moderador.groups.add(Group.objects.get(name="Moderador"))
+        self.alice = User.objects.create_user("alice", password="senha12345")
+        self.bob = User.objects.create_user("bob", password="senha12345")
+        self.witcher = Game.objects.create(rawg_id=1, title="The Witcher 3")
+        self.portal = Game.objects.create(rawg_id=2, title="Portal 2")
+
+        Review.objects.create(user=self.alice, game=self.witcher, rating=5, title="Obra-prima")
+        Review.objects.create(user=self.alice, game=self.portal, rating=1, title="Não gostei")
+        Review.objects.create(user=self.bob, game=self.witcher, rating=1, title="Longo demais")
+
+        self.url = reverse("games:moderation_panel")
+        self.client.force_login(self.moderador)
+
+    def titulos(self, response):
+        return {review.title for review in response.context["reviews"]}
+
+    def test_jogador_comum_recebe_403(self):
+        self.client.force_login(self.alice)
+
+        response = self.client.get(self.url, {"nota": 1})
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_anonimo_e_redirecionado_ao_login(self):
+        self.client.logout()
+
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(reverse("games:login"), response.url)
+
+    def test_filtro_por_jogo_ignora_maiusculas_e_aceita_parte_do_nome(self):
+        response = self.client.get(self.url, {"jogo": "witcher"})
+
+        self.assertEqual(self.titulos(response), {"Obra-prima", "Longo demais"})
+
+    def test_filtro_por_autor(self):
+        response = self.client.get(self.url, {"autor": "bob"})
+
+        self.assertEqual(self.titulos(response), {"Longo demais"})
+
+    def test_filtro_por_nota(self):
+        response = self.client.get(self.url, {"nota": 1})
+
+        self.assertEqual(self.titulos(response), {"Não gostei", "Longo demais"})
+
+    def test_filtros_combinados_se_somam(self):
+        response = self.client.get(self.url, {"nota": 1, "autor": "alice"})
+
+        self.assertEqual(self.titulos(response), {"Não gostei"})
+
+    def test_filtro_sem_resultado_mostra_aviso(self):
+        response = self.client.get(self.url, {"autor": "ninguem"})
+
+        self.assertContains(response, "Nenhuma review combina com esses filtros.")
+
+    def test_paginacao_preserva_filtros(self):
+        for i in range(10, 31):
+            jogo = Game.objects.create(rawg_id=i, title=f"Jogo {i}")
+            Review.objects.create(user=self.bob, game=jogo, rating=0, title=f"Ruim {i}")
+
+        response = self.client.get(self.url, {"autor": "bob", "nota": 0})
+
+        self.assertEqual(response.context["page_obj"].paginator.count, 21)
+        self.assertContains(response, 'href="?autor=bob&amp;nota=0&amp;page=2"')
+
+
+class UrlPaginaTagTests(TestCase):
+    def renderizar(self, query_string):
+        request = RequestFactory().get(f"/?{query_string}")
+        template = Template("{% load custom_filters %}{% url_pagina 3 %}")
+        return template.render(Context({"request": request}))
+
+    def test_mantem_filtros_e_troca_a_pagina(self):
+        self.assertEqual(self.renderizar("status=completed&page=1"), "?status=completed&amp;page=3")
+
+    def test_sem_filtros_gera_so_a_pagina(self):
+        self.assertEqual(self.renderizar(""), "?page=3")

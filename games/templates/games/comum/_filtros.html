@@ -1,0 +1,17 @@
+{% comment %}
+Formulário de filtros (django-filter) em linha. Parâmetros: filtro (FilterSet) e rotulo (aria-label).
+{% endcomment %}
+{% load crispy_forms_tags custom_filters %}
+<form method="get" class="mgl-filtros" role="search" aria-label="{{ rotulo|default:'Filtros' }}">
+    <div class="row g-3 align-items-end">
+        {% for field in filtro.form %}
+            <div class="col-sm-6 col-lg-3">{{ field|as_crispy_field }}</div>
+        {% endfor %}
+        <div class="col-lg-3 d-flex gap-2 mb-3">
+            <button type="submit" class="btn btn-primary">Filtrar</button>
+            {% if filtro|tem_filtros %}
+                <a href="{{ request.path }}" class="btn btn-outline-secondary">Limpar</a>
+            {% endif %}
+        </div>
+    </div>
+</form>

@@ -32,6 +32,19 @@ def genero_pt(genero):
     return traduzir_genero(str(genero))
 
 
+@register.simple_tag(takes_context=True)
+def url_pagina(context, numero):
+    """Link para a página `numero` mantendo os filtros da busca atual."""
+    params = context["request"].GET.copy()
+    params["page"] = numero
+    return f"?{params.urlencode()}"
+
+
+@register.filter
+def tem_filtros(filtro):
+    return any(filtro.data.get(nome) for nome in filtro.filters)
+
+
 @register.filter
 def has_group(user, name):
     return user.is_authenticated and user.groups.filter(name=name).exists()

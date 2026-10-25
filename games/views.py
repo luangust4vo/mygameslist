@@ -15,9 +15,11 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth import login
 from django.urls import reverse_lazy
 from django.contrib import messages
+from django_filters.views import FilterView
 from .rawg import get
 from .services import import_game
 from .models import Game, Review, UserGameList, Activity
+from .filters import ReviewModerationFilter, UserGameListFilter
 from .forms import ReviewForm, UserGameListForm
 
 
@@ -224,8 +226,9 @@ class ReviewDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         return reverse_lazy("games:reviews_list", kwargs={"pk": self.object.game.pk})  # type: ignore
 
 
-class MyGameListView(LoginRequiredMixin, ListView):
+class MyGameListView(LoginRequiredMixin, FilterView):
     model = UserGameList
+    filterset_class = UserGameListFilter
     template_name = "games/list/user_games_list.html"
     context_object_name = "items"
     paginate_by = 12
@@ -234,6 +237,11 @@ class MyGameListView(LoginRequiredMixin, ListView):
         return UserGameList.objects.filter(user=self.request.user).select_related(
             "game"
         )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["has_items"] = UserGameList.objects.filter(user=self.request.user).exists()
+        return context
 
 
 class AddToListView(LoginRequiredMixin, CreateView):
@@ -325,8 +333,9 @@ class RemoveFromListView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         return reverse_lazy("games:my_list")
 
 
-class ModerationPanelView(LoginRequiredMixin, GroupRequiredMixin, ListView):
+class ModerationPanelView(LoginRequiredMixin, GroupRequiredMixin, FilterView):
     model = Review
+    filterset_class = ReviewModerationFilter
     template_name = "games/moderation/panel.html"
     context_object_name = "reviews"
     group_required = "Moderador"
@@ -334,3 +343,8 @@ class ModerationPanelView(LoginRequiredMixin, GroupRequiredMixin, ListView):
 
     def get_queryset(self):
         return Review.objects.select_related("user", "game").order_by("-created_at")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["has_reviews"] = Review.objects.exists()
+        return context
