@@ -80,7 +80,16 @@ from unittest.mock import patch
 @patch("games.services.get_details")    # importação de um jogo
 ```
 
-Para a IA, faça o `patch` da função `chamar_ia` no módulo que a chama. Nenhum teste pode usar rede, chave de API ou consumir a cota de tokens.
+Para a IA:
+
+```python
+@patch("ia.views.chamar_ia")                                  # tela que usa a IA
+@patch("ia.servicos.gemini.gerar", return_value={...})        # testar chamar_ia (cota, auditoria)
+@patch("ia.gemini.requests.post")                             # testar o cliente HTTP do Gemini
+@override_settings(GEMINI_API_KEY="chave-teste")             # chamar_ia bloqueia sem chave
+```
+
+Os testes da IA ficam em `ia/tests.py`; rode `python manage.py test games ia`. Nenhum teste pode usar rede, chave de API ou consumir a cota de tokens.
 
 ## 7. Corrigindo bugs
 

@@ -34,7 +34,7 @@ O MyGamesList é um site, no estilo do MyAnimeList, em que o jogador monta a sua
 9. Painel de moderação, com filtros por jogo, autor e nota (django-filter) e paginação que preserva os filtros **(existe)**.
 10. Confirmação de remoção da lista e de exclusão de review em modal com Bootbox; a página de confirmação da lista continua funcionando sem JavaScript **(existe)**. O mesmo vale para "Limpar conversa" do assistente **(novo)**.
 11. Assistente de IA que responde sobre jogos e sobre o uso do site, com histórico por usuário, em `assistente/` **(novo)**.
-12. App `ia`: configuração editável, auditoria de cada chamada, cota mensal de tokens por usuário, e as telas de requisições, configuração (com "Testar conexão"), IA por usuário e meu consumo **(novo)**.
+12. App `ia`: configuração editável, auditoria de cada chamada, cota mensal de tokens por usuário, e as telas de requisições (com filtros), configuração (com "Testar conexão"), IA por usuário e meu consumo **(existe)**.
 13. Comando para popular o catálogo com jogos populares por gênero e carregar as listas de gêneros e plataformas do RAWG **(novo, depois de 13/11)**.
 
 ## 4. O que o sistema NÃO faz
@@ -68,7 +68,8 @@ O MyGamesList é um site, no estilo do MyAnimeList, em que o jogador monta a sua
 - Toda chamada à IA passa por `chamar_ia` no app `ia` (única porta de entrada), é registrada na auditoria (inclusive as que falham) e conta na cota mensal de tokens do usuário.
 - A cota é por usuário: vale o limite padrão da configuração, que o Moderador pode ajustar por usuário. Com a cota esgotada, a chamada é bloqueada com mensagem clara.
 - A configuração fica em uma única linha no banco: modelo do Gemini, temperatura, máximo de tokens por resposta, cota mensal padrão e a chave "IA ativa". A chave de API não fica no banco.
-- O Gemini é chamado pela API REST com `requests`.
+- O Gemini é chamado pela API REST com `requests`, com limite de 25 s por chamada (o gunicorn do App Engine derruba o worker em 30 s). Tempo esgotado, erro HTTP ou resposta sem texto viram "A IA está indisponível no momento" para o usuário; o Moderador vê o detalhe técnico no teste de conexão e nas requisições.
+- O modelo padrão é `gemini-flash-lite-latest`, um alias que acompanha a versão atual (versões fixas são retiradas pelo Google). Em outubro de 2026 os modelos Flash completos estavam dando tempo esgotado e os Lite respondiam em 1 a 4 s.
 
 ### Assistente
 - Antes de responder, uma chamada curta de classificação (só a pergunta, sem histórico) decide se a pergunta é sobre jogos ou sobre o uso do site; se não for, a pergunta principal nem é feita. As instruções do `contexto_projeto.md` são a segunda barreira.
@@ -98,13 +99,13 @@ O MyGamesList é um site, no estilo do MyAnimeList, em que o jogador monta a sua
 1. Atualizar esta proposta e criar a migration do grupo Moderador **(existe)**.
 2. django-filter na Minha lista e no painel de moderação, com a templatetag de paginação **(existe)**.
 3. Select2 e Bootbox **(existe)**.
-4. App `ia`: models (configuração, auditoria e cota), `chamar_ia` e as quatro telas **(novo)**.
+4. App `ia`: models (configuração, auditoria e cota), `chamar_ia` e as quatro telas **(existe)**.
 5. Tradução por IA como alternativa à Steam e o botão de nova tradução do Moderador **(novo)**.
 6. Assistente **(novo)**.
 7. Entrega **(novo)**:
    - `README.md` com uma tabela que liga cada requisito do plano ao arquivo que o cumpre;
    - conferência item por item contra o plano;
-   - merge na `main` e deploy (Neon e App Engine);
+   - merge na `main` e deploy (Neon e App Engine), com `GEMINI_API_KEY` no Secret Manager;
    - texto do repositório gerado pelo gitingest a partir da `main`, sem o PDF, as skills de terceiros e o `skills-lock.json`, colado no TestAI.
 
 ## 8. Dúvidas
