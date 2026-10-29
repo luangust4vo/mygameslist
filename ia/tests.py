@@ -38,7 +38,7 @@ RESPOSTA_GEMINI = {
     },
 }
 
-RESULTADO_GERAR = {"texto": "OK", "tokens_entrada": 10, "tokens_saida": 32, "tokens_total": 42}
+RESULTADO_GERAR = {"texto": "OK", "motivo": "STOP", "tokens_entrada": 10, "tokens_saida": 32, "tokens_total": 42}
 
 
 def mensagens(response):
@@ -107,6 +107,7 @@ class ChamarIATests(TestCase):
         resposta = chamar_ia(self.alice, "assistente", "Qual o melhor RPG?")
 
         self.assertEqual(resposta.texto, "OK")
+        self.assertFalse(resposta.cortada)
         registro = RequisicaoIA.objects.get()
         self.assertEqual(registro.status, "sucesso")
         self.assertEqual(registro.user, self.alice)
@@ -180,6 +181,13 @@ class ChamarIATests(TestCase):
             chamar_ia(self.alice, "assistente", "Oi")
 
         mock_gerar.assert_not_called()
+
+    def test_resposta_cortada_pelo_limite_de_tokens_e_sinalizada(self, mock_gerar):
+        mock_gerar.return_value = {**RESULTADO_GERAR, "motivo": "MAX_TOKENS"}
+
+        resposta = chamar_ia(self.alice, "traducao", "Translate")
+
+        self.assertTrue(resposta.cortada)
 
     def test_chamada_do_sistema_nao_verifica_cota(self, mock_gerar):
         self.configuracao.cota_mensal_padrao = 0

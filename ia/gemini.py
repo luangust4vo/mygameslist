@@ -62,8 +62,9 @@ def gerar(chave, modelo, mensagens, instrucoes='', temperatura=0.7, max_tokens=2
     candidatos = dados.get('candidates') or [{}]
     partes = (candidatos[0].get('content') or {}).get('parts') or []
     texto = ''.join(parte.get('text', '') for parte in partes if not parte.get('thought')).strip()
+    motivo = candidatos[0].get('finishReason', 'desconhecido')
     if not texto:
-        motivo = candidatos[0].get('finishReason', 'desconhecido')
         raise ErroGemini(f'O Gemini não devolveu texto (motivo: {motivo}).', uso)
 
-    return {'texto': texto, **uso}
+    # motivo "MAX_TOKENS" indica que o texto foi cortado pelo limite de tokens
+    return {'texto': texto, 'motivo': motivo, **uso}

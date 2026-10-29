@@ -36,6 +36,12 @@ class RespostaIA:
     texto: str
     tokens_total: int
     requisicao: RequisicaoIA
+    motivo: str = 'STOP'
+
+    @property
+    def cortada(self):
+        """True quando o texto parou no limite de tokens e está incompleto."""
+        return self.motivo == 'MAX_TOKENS'
 
 
 def inicio_do_mes():
@@ -124,4 +130,6 @@ def chamar_ia(user, finalidade, mensagens, instrucoes='', max_tokens=None, tempe
     requisicao.tokens_total = resultado['tokens_total']
     requisicao.duracao_ms = int((time.monotonic() - inicio) * 1000)
     requisicao.save()
-    return RespostaIA(resultado['texto'], resultado['tokens_total'], requisicao)
+    return RespostaIA(
+        resultado['texto'], resultado['tokens_total'], requisicao, resultado.get('motivo', 'STOP')
+    )
