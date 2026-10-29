@@ -24,8 +24,8 @@ O MyGamesList é um site, no estilo do MyAnimeList, em que o jogador monta a sua
    - descrição em português buscada na Steam (texto oficial), guardada no banco como HTML sanitizado; sem ela, mostra a original em inglês do RAWG com aviso **(existe)**;
    - capa e ações fixas enquanto as informações rolam **(existe)**;
    - gêneros traduzidos para português na exibição **(existe)**;
-   - tradução por IA quando a Steam não tem descrição em português **(novo)**;
-   - botão do Moderador para pedir nova tradução por IA **(novo)**.
+   - tradução por IA quando a Steam não tem descrição em português, com aviso "Descrição traduzida por IA" **(existe)**;
+   - botão do Moderador para pedir nova tradução por IA, com confirmação em Bootbox **(existe)**.
 4. Minha lista com status (Quero Jogar, Jogando, Pausado, Zerado, Platinado, Dropado) **(existe)**, com filtros por status, gênero e plataforma (django-filter) e paginação que preserva os filtros pela templatetag `url_pagina`, com campos de gênero e plataforma em Select2 **(existe)**.
 5. Reviews com nota de 0 a 5, título e comentário: criar, editar e excluir **(existe)**; tela "minhas reviews" **(novo, depois de 13/11)**.
 6. Página inicial com "Jogos em destaque" (maior nota RAWG), "Mais bem avaliados" (nota local), "Chegaram agora" e feed de atividades, incluindo a de review **(existe)**.
@@ -60,7 +60,8 @@ O MyGamesList é um site, no estilo do MyAnimeList, em que o jogador monta a sua
 
 ### Descrições
 - Na importação, a descrição em português vem da Steam quando o RAWG aponta uma página da loja; falhas na Steam não impedem a importação.
-- Sem descrição da Steam, a IA traduz a original uma única vez e guarda com fonte "ia"; a chamada conta na cota de quem importou.
+- Sem descrição da Steam, a IA traduz a original uma única vez e guarda com fonte "ia"; a chamada conta na cota de quem importou. Se a IA falhar ou a cota acabar, o jogo é importado sem tradução e o Moderador pode traduzir depois.
+- A tradução usa até 8192 tokens de saída e temperatura 0,2. Uma resposta cortada pelo limite de tokens não é salva.
 - Só o Moderador pede nova tradução, e só em jogos sem descrição em português ou com fonte "ia". O texto da Steam, que é oficial, não é substituído.
 - Toda descrição é guardada e exibida como HTML sanitizado (nh3): só h2, h3, h4, p, br, ul, ol, li, strong e em, sem atributos.
 
@@ -100,12 +101,13 @@ O MyGamesList é um site, no estilo do MyAnimeList, em que o jogador monta a sua
 2. django-filter na Minha lista e no painel de moderação, com a templatetag de paginação **(existe)**.
 3. Select2 e Bootbox **(existe)**.
 4. App `ia`: models (configuração, auditoria e cota), `chamar_ia` e as quatro telas **(existe)**.
-5. Tradução por IA como alternativa à Steam e o botão de nova tradução do Moderador **(novo)**.
+5. Tradução por IA como alternativa à Steam e o botão de nova tradução do Moderador **(existe)**.
 6. Assistente **(novo)**.
 7. Entrega **(novo)**:
    - `README.md` com uma tabela que liga cada requisito do plano ao arquivo que o cumpre;
    - conferência item por item contra o plano;
    - merge na `main` e deploy (Neon e App Engine), com `GEMINI_API_KEY` no Secret Manager;
+   - versionar os arquivos estáticos (`ManifestStaticFilesStorage`), para o navegador não usar `mgl.js` e `global.css` antigos depois do deploy;
    - texto do repositório gerado pelo gitingest a partir da `main`, sem o PDF, as skills de terceiros e o `skills-lock.json`, colado no TestAI.
 
 ## 8. Dúvidas
