@@ -68,6 +68,9 @@
         </dl>
 
         {% if game.description_pt %}
+            {% if game.description_pt_source == "ia" %}
+                <p class="text-muted small fst-italic">Descrição traduzida por IA a partir do original em inglês</p>
+            {% endif %}
             <div class="descricao-jogo" tabindex="0" role="region" aria-label="Descrição do jogo">
                 {{ game.description_pt|descricao }}
             </div>
@@ -76,6 +79,23 @@
             <div class="descricao-jogo" lang="en" tabindex="0" role="region" aria-label="Descrição do jogo">
                 {{ game.description|descricao }}
             </div>
+        {% endif %}
+
+        {% if request.user|has_group:"Moderador" and game.pode_retraduzir %}
+            <form
+                method="post"
+                action="{% url 'games:retraduzir_descricao' game.pk %}"
+                class="mt-3"
+                data-confirmar="{% if game.description_pt %}A tradução atual será substituída por uma nova tradução da IA.{% else %}A descrição original será traduzida pela IA.{% endif %} A chamada conta na sua cota de IA."
+                data-confirmar-titulo="{% if game.description_pt %}Traduzir de novo?{% else %}Traduzir com IA?{% endif %}"
+                data-confirmar-botao="Traduzir"
+                data-confirmar-classe="btn-primary"
+            >
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm btn-outline-secondary">
+                    {% if game.description_pt %}Pedir nova tradução{% else %}Traduzir com IA{% endif %}
+                </button>
+            </form>
         {% endif %}
     </div>
 </div>

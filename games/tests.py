@@ -10,6 +10,8 @@ import requests
 
 from .models import Activity, Game, Genre, Platform, Review, UserGameList
 from .templatetags.custom_filters import descricao, genero_pt
+from ia.servicos import CotaEsgotada, IAIndisponivel, RespostaIA
+
 from .services import import_game
 from .steam import get_description_pt
 
@@ -191,6 +193,12 @@ RAWG_STORES = {
 
 @patch("games.services.get_details", return_value=RAWG_DETAILS)
 class ImportacaoDescricaoPtTests(TestCase):
+    def setUp(self):
+        # Sem descrição da Steam a importação tenta a IA; aqui ela está fora do ar.
+        patcher = patch("games.services.chamar_ia", side_effect=IAIndisponivel("IA fora do ar"))
+        self.mock_chamar_ia = patcher.start()
+        self.addCleanup(patcher.stop)
+
     @patch("games.services.get_description_pt", return_value="Uma aventura desafiadora.")
     @patch("games.services.get_stores", return_value=RAWG_STORES)
     def test_grava_descricao_da_steam(self, mock_stores, mock_steam, mock_details):
@@ -716,3 +724,191 @@ class PluginsJqueryTests(TestCase):
 
         self.assertContains(response, 'data-confirmar-titulo="Excluir review?"')
         self.assertNotContains(response, "onclick=")
+
+
+def resposta_ia(texto, motivo="STOP"):
+    return RespostaIA(texto=texto, tokens_total=10, requisicao=None, motivo=motivo)
+
+
+@patch("games.services.chamar_ia")
+class ImportacaoTraducaoIATests(TestCase):
+    def setUp(self):
+        self.alice = User.objects.create_user("alice", password="senha12345")
+        detalhes = {**RAWG_DETAILS, "description": "<p>A challenging adventure.</p>"}
+        for alvo, valor in [
+            ("games.services.get_details", detalhes),
+            ("games.services.get_stores", {"results": []}),
+        ]:
+            patcher = patch(alvo, return_value=valor)
+            setattr(self, alvo.rsplit(".", 1)[1], patcher.start())
+            self.addCleanup(patcher.stop)
+
+    def test_sem_steam_traduz_com_ia_na_cota_de_quem_importou(self, mock_chamar_ia):
+        mock_chamar_ia.return_value = resposta_ia("<p>Uma aventura desafiadora.</p>")
+
+        game = import_game(9767, user=self.alice)
+
+        self.assertEqual(game.description_pt, "<p>Uma aventura desafiadora.</p>")
+        self.assertEqual(game.description_pt_source, "ia")
+        args, kwargs = mock_chamar_ia.call_args
+        self.assertEqual(args, (self.alice, "traducao", "<p>A challenging adventure.</p>"))
+        self.assertEqual((kwargs["max_tokens"], kwargs["temperatura"]), (8192, 0.2))
+        self.assertIn("português do Brasil", kwargs["instrucoes"])
+
+    @patch("games.services.get_description_pt", return_value="<p>Texto da Steam.</p>")
+    def test_com_descricao_da_steam_nao_chama_a_ia(self, mock_steam, mock_chamar_ia):
+        self.get_stores.return_value = RAWG_STORES
+
+        game = import_game(9767, user=self.alice)
+
+        mock_chamar_ia.assert_not_called()
+        self.assertEqual(game.description_pt_source, "steam")
+
+    def test_falha_da_ia_nao_impede_a_importacao(self, mock_chamar_ia):
+        mock_chamar_ia.side_effect = CotaEsgotada("Sua cota de IA deste mês acabou.")
+
+        game = import_game(9767, user=self.alice)
+
+        self.assertTrue(Game.objects.filter(pk=game.pk).exists())
+        self.assertEqual((game.description_pt, game.description_pt_source), ("", ""))
+
+    def test_traducao_cortada_pelo_limite_nao_e_salva(self, mock_chamar_ia):
+        mock_chamar_ia.return_value = resposta_ia("<p>Uma aventura desa", motivo="MAX_TOKENS")
+
+        game = import_game(9767, user=self.alice)
+
+        game.refresh_from_db()
+        self.assertEqual(game.description_pt, "")
+
+    def test_remove_cercas_de_codigo_e_sanitiza_a_traducao(self, mock_chamar_ia):
+        mock_chamar_ia.return_value = resposta_ia(
+            "```html\n<p onclick=\"x()\">Olá</p><script>alert(1)</script>\n```"
+        )
+
+        game = import_game(9767, user=self.alice)
+
+        self.assertEqual(game.description_pt, "<p>Olá</p>")
+
+    def test_sem_descricao_original_nao_chama_a_ia(self, mock_chamar_ia):
+        self.get_details.return_value = {**RAWG_DETAILS, "description": "", "description_raw": ""}
+
+        import_game(9767, user=self.alice)
+
+        mock_chamar_ia.assert_not_called()
+
+    @patch("games.views.import_game")
+    def test_tela_de_importacao_passa_o_usuario_logado(self, mock_import, mock_chamar_ia):
+        mock_import.return_value = Game.objects.create(rawg_id=1, title="Celeste")
+        self.client.force_login(self.alice)
+
+        self.client.post(reverse("games:import_game", kwargs={"id": 3328}))
+
+        mock_import.assert_called_once_with(3328, user=self.alice)
+
+
+@patch("games.services.chamar_ia", return_value=resposta_ia("<p>Nova tradução.</p>"))
+class RetraduzirDescricaoTests(TestCase):
+    def setUp(self):
+        self.moderador = User.objects.create_user("moderador", password="senha12345")
+        self.moderador.groups.add(Group.objects.get(name="Moderador"))
+        self.alice = User.objects.create_user("alice", password="senha12345")
+        self.jogo = Game.objects.create(
+            rawg_id=1,
+            title="Celeste",
+            description="<p>A climbing game.</p>",
+            description_pt="<p>Tradução antiga.</p>",
+            description_pt_source="ia",
+        )
+        self.url = reverse("games:retraduzir_descricao", args=[self.jogo.pk])
+        self.pagina = reverse("games:game_details", args=[self.jogo.pk])
+        self.client.force_login(self.moderador)
+
+    def test_moderador_pede_nova_traducao(self, mock_chamar_ia):
+        response = self.client.post(self.url)
+
+        self.assertRedirects(response, self.pagina)
+        self.jogo.refresh_from_db()
+        self.assertEqual(self.jogo.description_pt, "<p>Nova tradução.</p>")
+        self.assertEqual(mock_chamar_ia.call_args.args[0], self.moderador)
+        self.assertIn("Descrição traduzida pela IA.", [str(m) for m in get_messages(response.wsgi_request)])
+
+    def test_jogo_sem_traducao_pode_ser_traduzido(self, mock_chamar_ia):
+        Game.objects.filter(pk=self.jogo.pk).update(description_pt="", description_pt_source="")
+
+        self.client.post(self.url)
+
+        self.jogo.refresh_from_db()
+        self.assertEqual(self.jogo.description_pt_source, "ia")
+
+    def test_descricao_da_steam_nao_e_substituida(self, mock_chamar_ia):
+        Game.objects.filter(pk=self.jogo.pk).update(description_pt="<p>Steam.</p>", description_pt_source="steam")
+
+        response = self.client.post(self.url)
+
+        mock_chamar_ia.assert_not_called()
+        self.jogo.refresh_from_db()
+        self.assertEqual(self.jogo.description_pt, "<p>Steam.</p>")
+        self.assertIn(
+            "A descrição em português veio da Steam e não pode ser substituída pela IA.",
+            [str(m) for m in get_messages(response.wsgi_request)],
+        )
+
+    def test_jogo_sem_descricao_original_mostra_erro(self, mock_chamar_ia):
+        Game.objects.filter(pk=self.jogo.pk).update(description="")
+
+        response = self.client.post(self.url)
+
+        mock_chamar_ia.assert_not_called()
+        self.assertIn(
+            "Este jogo não tem descrição original para traduzir.",
+            [str(m) for m in get_messages(response.wsgi_request)],
+        )
+
+    def test_falha_da_ia_mantem_a_traducao_e_mostra_o_motivo(self, mock_chamar_ia):
+        mock_chamar_ia.side_effect = CotaEsgotada("Sua cota de IA deste mês acabou.")
+
+        response = self.client.post(self.url)
+
+        self.jogo.refresh_from_db()
+        self.assertEqual(self.jogo.description_pt, "<p>Tradução antiga.</p>")
+        self.assertIn(
+            "Não foi possível traduzir a descrição. Sua cota de IA deste mês acabou.",
+            [str(m) for m in get_messages(response.wsgi_request)],
+        )
+
+    def test_jogador_comum_recebe_403(self, mock_chamar_ia):
+        self.client.force_login(self.alice)
+
+        self.assertEqual(self.client.post(self.url).status_code, 403)
+        mock_chamar_ia.assert_not_called()
+
+    def test_anonimo_e_redirecionado_ao_login(self, mock_chamar_ia):
+        self.client.logout()
+
+        response = self.client.post(self.url)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(reverse("games:login"), response.url)
+
+    def test_get_nao_e_aceito(self, mock_chamar_ia):
+        self.assertEqual(self.client.get(self.url).status_code, 405)
+
+    def test_botao_aparece_so_para_o_moderador_em_jogo_elegivel(self, mock_chamar_ia):
+        moderador = self.client.get(self.pagina)
+        self.client.force_login(self.alice)
+        jogador = self.client.get(self.pagina)
+        Game.objects.filter(pk=self.jogo.pk).update(description_pt_source="steam")
+        self.client.force_login(self.moderador)
+        steam = self.client.get(self.pagina)
+
+        self.assertContains(moderador, f'action="{self.url}"')
+        self.assertContains(moderador, "Pedir nova tradução")
+        self.assertNotContains(jogador, f'action="{self.url}"')
+        self.assertNotContains(steam, f'action="{self.url}"')
+
+    def test_pagina_avisa_que_a_traducao_e_da_ia(self, mock_chamar_ia):
+        self.client.logout()
+
+        response = self.client.get(self.pagina)
+
+        self.assertContains(response, "Descrição traduzida por IA a partir do original em inglês")

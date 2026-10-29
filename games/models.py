@@ -64,6 +64,11 @@ class Game(models.Model):
     def __str__(self):
         return self.title
 
+    @property
+    def pode_retraduzir(self):
+        """A IA só traduz quando há original e a descrição em português não veio da Steam."""
+        return bool(self.description) and self.description_pt_source in ("", "ia")
+
     def update_local_rating(self):
         avg = Review.objects.filter(game=self).aggregate(Avg("rating"))["rating__avg"]
         self.local_rating = round(avg, 2) if avg is not None else 0

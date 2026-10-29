@@ -13,6 +13,11 @@ urlpatterns = [
     path("game/search/", views.SearchGameView.as_view(), name="search"),
     path("game/<int:pk>/", views.GameDetailsView.as_view(), name="game_details"),
     path("game/import/<int:id>/", views.ImportGamesView.as_view(), name="import_game"),
+    path(
+        "game/<int:pk>/retraduzir/",
+        views.RetraduzirDescricaoView.as_view(),
+        name="retraduzir_descricao",
+    ),
     path("game/<int:pk>/reviews/", views.ReviewListView.as_view(), name="reviews_list"),
     path(
         "game/<int:pk>/reviews/<int:review_pk>/",

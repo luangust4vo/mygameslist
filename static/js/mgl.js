@@ -3,6 +3,7 @@
  * - Select2: selects marcados com data-buscavel ganham busca. (Não use
  *   data-select2: o plugin guarda a instância em .data("select2") e trava.)
  * - Bootbox: links e formulários com data-confirmar pedem confirmação num modal.
+ *   data-confirmar-classe troca a cor do botão (padrão: btn-danger).
  *   Links fazem POST para o próprio href; sem JavaScript, o link abre a página
  *   de confirmação do Django.
  */
@@ -22,7 +23,10 @@ $(function () {
             message: $('<p>').text($el.data('confirmar')),
             centerVertical: true,
             buttons: {
-                confirm: { label: $el.data('confirmar-botao') || 'Confirmar', className: 'btn-danger' },
+                confirm: {
+                    label: $el.data('confirmar-botao') || 'Confirmar',
+                    className: $el.data('confirmar-classe') || 'btn-danger',
+                },
                 cancel: { label: 'Cancelar', className: 'btn-outline-secondary' },
             },
             callback: function (ok) {

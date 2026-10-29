@@ -17,7 +17,9 @@ from django.urls import reverse_lazy
 from django.contrib import messages
 from django_filters.views import FilterView
 from .rawg import get
-from .services import import_game
+from ia.servicos import ErroIA
+
+from .services import import_game, traduzir_descricao
 from .models import Game, Review, UserGameList, Activity
 from .filters import ReviewModerationFilter, UserGameListFilter
 from .forms import ReviewForm, UserGameListForm
@@ -94,7 +96,7 @@ class SearchGameView(View):
 
 class ImportGamesView(LoginRequiredMixin, View):
     def post(self, request, id):
-        game = import_game(id)
+        game = import_game(id, user=request.user)
         if game:
             return redirect("games:game_details", pk=game.pk)
         messages.error(request, "Não foi possível importar o game.")
@@ -110,6 +112,27 @@ class GameDetailsView(View):
                 user=request.user, game=game
             ).first()
         return render(request, "games/game/details.html", context)
+
+
+class RetraduzirDescricaoView(LoginRequiredMixin, GroupRequiredMixin, View):
+    group_required = "Moderador"
+
+    def post(self, request, pk):
+        game = get_object_or_404(Game, pk=pk)
+        if not game.description:
+            messages.error(request, "Este jogo não tem descrição original para traduzir.")
+        elif not game.pode_retraduzir:
+            messages.error(
+                request, "A descrição em português veio da Steam e não pode ser substituída pela IA."
+            )
+        else:
+            try:
+                traduzir_descricao(game, request.user)
+            except ErroIA as erro:
+                messages.error(request, f"Não foi possível traduzir a descrição. {erro}")
+            else:
+                messages.success(request, "Descrição traduzida pela IA.")
+        return redirect("games:game_details", pk=game.pk)
 
 
 class ReviewListView(ListView):
