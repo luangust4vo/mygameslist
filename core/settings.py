@@ -10,11 +10,6 @@ load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv(
-    "SECRET_KEY", "django-insecure-%e*+uq4)2hpo_1&t*#7_++0g3+6gn8zxq8ilz^*q&uftb_@y!y"
-)
-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
@@ -98,11 +93,16 @@ def _load_secret_from_manager(secret_id):
     if not project_id:
         return None
 
+    from google.api_core.exceptions import NotFound
     from google.cloud import secretmanager
 
     client = secretmanager.SecretManagerServiceClient()
     name = f"projects/{project_id}/secrets/{secret_id}/versions/latest"
-    response = client.access_secret_version(request={"name": name})
+    try:
+        response = client.access_secret_version(request={"name": name})
+    except NotFound:
+        # Segredo opcional que não foi criado: get_config_value decide se é obrigatório.
+        return None
     return response.payload.data.decode("utf-8")
 
 
@@ -125,6 +125,14 @@ def get_config_value(name, default=None, required_in_cloud=False):
 
     return default
 
+
+# SECURITY WARNING: keep the secret key used in production secret!
+# A chave de exemplo só vale fora da nuvem; no App Engine ela vem do Secret Manager.
+SECRET_KEY = get_config_value(
+    "SECRET_KEY",
+    default="django-insecure-%e*+uq4)2hpo_1&t*#7_++0g3+6gn8zxq8ilz^*q&uftb_@y!y",
+    required_in_cloud=True,
+)
 
 # External API Settings
 API_KEY = get_config_value("API_KEY", required_in_cloud=True)
