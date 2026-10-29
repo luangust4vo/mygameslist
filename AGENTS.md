@@ -6,7 +6,7 @@ Site no estilo MyAnimeList para jogos: lista pessoal com status, reviews e moder
 
 - Python 3.12, Django 5.2, Crispy Forms (`crispy_bootstrap5`), Markdown
 - Banco: PostgreSQL em produção (via `DATABASE_URL`), SQLite local (`db.sqlite3`, usado quando `DATABASE_URL` está vazia)
-- Deploy: Google App Engine (`app.yaml`, gunicorn); segredos no Secret Manager
+- Deploy: Google App Engine (`app.yaml`, gunicorn); segredos no Secret Manager. Passo a passo no `README.md`; o `collectstatic` roda com `DATABASE_URL=` vazia e `DEBUG=False`
 - Projeto em `core/`; o domínio de jogos fica no app `games/` (`rawg.py` = cliente da API, `steam.py` = descrição em português da Steam, `sanitize.py` = HTML permitido nas descrições, `services.py` = importação)
 - IA no app `ia/`: `ia.servicos.chamar_ia` é a única porta de entrada (configuração, cota mensal por usuário e auditoria em `RequisicaoIA`); `ia/gemini.py` é o cliente REST do Gemini e só `chamar_ia` o usa. O assistente fica em `ia/assistente.py`, com as instruções em `ia/contexto_projeto.md` (enviado em toda pergunta: mantenha curto e atualize quando mudar uma tela ou regra). Os templates das telas de IA ficam em `games/templates/games/ia/`.
 
