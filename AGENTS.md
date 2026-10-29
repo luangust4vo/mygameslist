@@ -8,7 +8,7 @@ Site no estilo MyAnimeList para jogos: lista pessoal com status, reviews e moder
 - Banco: PostgreSQL em produção (via `DATABASE_URL`), SQLite local (`db.sqlite3`, usado quando `DATABASE_URL` está vazia)
 - Deploy: Google App Engine (`app.yaml`, gunicorn); segredos no Secret Manager
 - Projeto em `core/`; o domínio de jogos fica no app `games/` (`rawg.py` = cliente da API, `steam.py` = descrição em português da Steam, `sanitize.py` = HTML permitido nas descrições, `services.py` = importação)
-- IA no app `ia/`: `ia.servicos.chamar_ia` é a única porta de entrada (configuração, cota mensal por usuário e auditoria em `RequisicaoIA`); `ia/gemini.py` é o cliente REST do Gemini e só `chamar_ia` o usa. Os templates das telas de IA ficam em `games/templates/games/ia/`.
+- IA no app `ia/`: `ia.servicos.chamar_ia` é a única porta de entrada (configuração, cota mensal por usuário e auditoria em `RequisicaoIA`); `ia/gemini.py` é o cliente REST do Gemini e só `chamar_ia` o usa. O assistente fica em `ia/assistente.py`, com as instruções em `ia/contexto_projeto.md` (enviado em toda pergunta: mantenha curto e atualize quando mudar uma tela ou regra). Os templates das telas de IA ficam em `games/templates/games/ia/`.
 
 ## Rodar
 
@@ -31,7 +31,7 @@ python manage.py check
 python manage.py test games ia
 ```
 
-Testes ficam em `games/tests.py` e `ia/tests.py` e usam `django.test.TestCase` com o `Client`. Não chame a API RAWG nem a Steam nos testes: use `unittest.mock.patch` em `games.views.import_game`, `games.services.get_details`/`get_stores`/`get_description_pt` ou em `games.steam.requests.get`. Para a IA, use `patch` em `chamar_ia` no módulo que a chama (ex.: `ia.views.chamar_ia`), em `ia.servicos.gemini.gerar` ou em `ia.gemini.requests.post`, e `override_settings(GEMINI_API_KEY=...)`.
+Testes ficam em `games/tests.py` e `ia/tests.py` e usam `django.test.TestCase` com o `Client`. Não chame a API RAWG nem a Steam nos testes: use `unittest.mock.patch` em `games.views.import_game`, `games.services.get_details`/`get_stores`/`get_description_pt` ou em `games.steam.requests.get`. Para a IA, use `patch` em `chamar_ia` no módulo que a chama (ex.: `ia.views.chamar_ia`, `ia.assistente.chamar_ia`, `games.services.chamar_ia`), em `ia.servicos.gemini.gerar` ou em `ia.gemini.requests.post`, e `override_settings(GEMINI_API_KEY=...)`.
 
 ## Convenções
 

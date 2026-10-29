@@ -32,8 +32,8 @@ O MyGamesList é um site, no estilo do MyAnimeList, em que o jogador monta a sua
 7. Preferências do jogador: logo após o cadastro, o sistema pede (sem obrigar) que o jogador escolha gêneros e plataformas de que gosta; o jogador pode pular e editar depois **(novo, depois de 13/11)**.
 8. Recomendações de jogos com base nas preferências e no que o jogador avaliou e listou, cada uma com o motivo ("porque você gosta de RPG e deu nota 5 a ...") **(novo, depois de 13/11)**.
 9. Painel de moderação, com filtros por jogo, autor e nota (django-filter) e paginação que preserva os filtros **(existe)**.
-10. Confirmação de remoção da lista e de exclusão de review em modal com Bootbox; a página de confirmação da lista continua funcionando sem JavaScript **(existe)**. O mesmo vale para "Limpar conversa" do assistente **(novo)**.
-11. Assistente de IA que responde sobre jogos e sobre o uso do site, com histórico por usuário, em `assistente/` **(novo)**.
+10. Confirmação de remoção da lista, de exclusão de review, de nova tradução e de "Limpar conversa" em modal com Bootbox; a página de confirmação da lista continua funcionando sem JavaScript **(existe)**.
+11. Assistente de IA que responde sobre jogos e sobre o uso do site, com histórico por usuário, em `assistente/` **(existe)**.
 12. App `ia`: configuração editável, auditoria de cada chamada, cota mensal de tokens por usuário, e as telas de requisições (com filtros), configuração (com "Testar conexão"), IA por usuário e meu consumo **(existe)**.
 13. Comando para popular o catálogo com jogos populares por gênero e carregar as listas de gêneros e plataformas do RAWG **(novo, depois de 13/11)**.
 
@@ -77,7 +77,9 @@ O MyGamesList é um site, no estilo do MyAnimeList, em que o jogador monta a sua
 - A resposta usa o `contexto_projeto.md`, as 5 últimas mensagens e um resumo da lista do usuário (até cerca de 30 jogos com status).
 - O histórico guarda só pares de pergunta e resposta. Se a IA falhar ou a cota acabar, a conversa mostra o motivo, a pergunta não entra no histórico e a falha fica na auditoria.
 - O usuário pode limpar a própria conversa; a auditoria é mantida.
-- Perguntas têm até 500 caracteres e são enviadas por AJAX (`$.ajax`) com CSRF.
+- Perguntas têm até 500 caracteres e são enviadas por AJAX (`$.ajax`) com CSRF. Sem JavaScript, o formulário é enviado normalmente e a página mostra o resultado.
+- A classificação tem limite de 10 s e a resposta, de 25 s; por isso o gunicorn roda com `--timeout 60` no `app.yaml`.
+- A pergunta recusada pela classificação não entra no histórico. Uma resposta cortada pelo limite de tokens é guardada com o aviso "Resposta interrompida pelo limite de tokens".
 - A resposta é Markdown sanitizado com nh3: as tags da descrição mais code, pre, blockquote e links com href só em http, https ou caminhos do próprio site.
 
 ### Recomendações (depois de 13/11)
@@ -102,7 +104,7 @@ O MyGamesList é um site, no estilo do MyAnimeList, em que o jogador monta a sua
 3. Select2 e Bootbox **(existe)**.
 4. App `ia`: models (configuração, auditoria e cota), `chamar_ia` e as quatro telas **(existe)**.
 5. Tradução por IA como alternativa à Steam e o botão de nova tradução do Moderador **(existe)**.
-6. Assistente **(novo)**.
+6. Assistente **(existe)**.
 7. Entrega **(novo)**:
    - `README.md` com uma tabela que liga cada requisito do plano ao arquivo que o cumpre;
    - conferência item por item contra o plano;
