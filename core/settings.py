@@ -1,4 +1,5 @@
 import os
+import sys
 from pathlib import Path
 from django.contrib.messages import constants as messages
 from django.core.exceptions import ImproperlyConfigured
@@ -198,6 +199,17 @@ USE_TZ = True
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "static_gcloud"
 STATICFILES_DIRS = [BASE_DIR / "static"]
+
+# Nomes com hash (global.abc123.css) fazem o navegador baixar a versão nova a cada
+# deploy. Só no App Engine e no collectstatic: o runserver e os testes não têm o
+# manifesto que o collectstatic gera.
+if os.getenv("GAE_ENV") or "collectstatic" in sys.argv:
+    STORAGES = {
+        "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
+        },
+    }
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
