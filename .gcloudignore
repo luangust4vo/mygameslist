@@ -19,3 +19,15 @@ __pycache__/
 /setup.cfg
 
 .env
+# Só vai para o App Engine o que o site usa para rodar.
+venv/
+*.pyc
+db.sqlite3
+.env-example
+.claude/
+.playwright-mcp/
+docs/
+skills-lock.json
+seed_test_data.py
+# static/ vai junto porque o collectstatic precisa dele; static_gcloud/ é o que o
+# app.yaml serve em /static.

@@ -1,4 +1,5 @@
 import os
+import sys
 from pathlib import Path
 from django.contrib.messages import constants as messages
 from django.core.exceptions import ImproperlyConfigured
@@ -9,11 +10,6 @@ load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv(
-    "SECRET_KEY", "django-insecure-%e*+uq4)2hpo_1&t*#7_++0g3+6gn8zxq8ilz^*q&uftb_@y!y"
-)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "False").lower() == "true"
@@ -98,11 +94,16 @@ def _load_secret_from_manager(secret_id):
     if not project_id:
         return None
 
+    from google.api_core.exceptions import NotFound
     from google.cloud import secretmanager
 
     client = secretmanager.SecretManagerServiceClient()
     name = f"projects/{project_id}/secrets/{secret_id}/versions/latest"
-    response = client.access_secret_version(request={"name": name})
+    try:
+        response = client.access_secret_version(request={"name": name})
+    except NotFound:
+        # Segredo opcional que não foi criado: get_config_value decide se é obrigatório.
+        return None
     return response.payload.data.decode("utf-8")
 
 
@@ -125,6 +126,14 @@ def get_config_value(name, default=None, required_in_cloud=False):
 
     return default
 
+
+# SECURITY WARNING: keep the secret key used in production secret!
+# A chave de exemplo só vale fora da nuvem; no App Engine ela vem do Secret Manager.
+SECRET_KEY = get_config_value(
+    "SECRET_KEY",
+    default="django-insecure-%e*+uq4)2hpo_1&t*#7_++0g3+6gn8zxq8ilz^*q&uftb_@y!y",
+    required_in_cloud=True,
+)
 
 # External API Settings
 API_KEY = get_config_value("API_KEY", required_in_cloud=True)
@@ -190,6 +199,17 @@ USE_TZ = True
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "static_gcloud"
 STATICFILES_DIRS = [BASE_DIR / "static"]
+
+# Nomes com hash (global.abc123.css) fazem o navegador baixar a versão nova a cada
+# deploy. Só no App Engine e no collectstatic: o runserver e os testes não têm o
+# manifesto que o collectstatic gera.
+if os.getenv("GAE_ENV") or "collectstatic" in sys.argv:
+    STORAGES = {
+        "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
+        },
+    }
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
