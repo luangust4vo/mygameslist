@@ -46,6 +46,7 @@ Testes ficam em `games/tests.py` e `ia/tests.py` e usam `django.test.TestCase` c
 
 - `docs/proposta.md`: proposta do sistema, com problema, usuários, escopo e regras de negócio. O que está marcado **(novo)** ainda não foi implementado.
 - `docs/2026 - Plano de Atividades e Avaliações-1.pdf`: plano de atividades e avaliações da disciplina.
+- `docs/diagramas/gerar_diagramas.py`: gera os diagramas da página Sobre (`static/img/*.svg`). Rode `python manage.py shell < docs/diagramas/gerar_diagramas.py` quando mudar um model ou uma funcionalidade.
 
 ## Skills (`.claude/skills/`)
 
