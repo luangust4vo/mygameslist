@@ -45,6 +45,24 @@ class HomeView(TemplateView):
         return context
 
 
+class SobreView(TemplateView):
+    template_name = "games/sobre/sobre.html"
+    extra_context = {
+        "atores": [
+            ("Visitante", "Vê a página inicial, busca jogos e lê as páginas dos jogos e as reviews."),
+            ("Jogador", "Importa jogos, mantém a própria lista, escreve reviews e conversa com o assistente."),
+            ("Moderador", "Exclui reviews impróprias, pede nova tradução e cuida da configuração e do consumo de IA."),
+        ],
+        "tecnologias": [
+            "Python 3.12 e Django 5.2",
+            "Bootstrap 5, jQuery, Select2 e Bootbox",
+            "PostgreSQL (Neon) e SQLite",
+            "Google App Engine e Secret Manager",
+            "API do RAWG, loja da Steam e Gemini",
+        ],
+    }
+
+
 class CustomLoginView(LoginView):
     template_name = "games/auth/login.html"
     redirect_authenticated_user = True
