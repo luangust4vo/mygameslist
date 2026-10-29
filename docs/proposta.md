@@ -105,15 +105,14 @@ O MyGamesList é um site, no estilo do MyAnimeList, em que o jogador monta a sua
 4. App `ia`: models (configuração, auditoria e cota), `chamar_ia` e as quatro telas **(existe)**.
 5. Tradução por IA como alternativa à Steam e o botão de nova tradução do Moderador **(existe)**.
 6. Assistente **(existe)**.
-7. Entrega **(novo)**:
-   - `README.md` com uma tabela que liga cada requisito do plano ao arquivo que o cumpre;
-   - conferência item por item contra o plano;
-   - merge na `main` e deploy (Neon e App Engine), com `GEMINI_API_KEY` no Secret Manager;
-   - versionar os arquivos estáticos (`ManifestStaticFilesStorage`), para o navegador não usar `mgl.js` e `global.css` antigos depois do deploy;
-   - texto do repositório gerado pelo gitingest a partir da `main`, sem o PDF, as skills de terceiros e o `skills-lock.json`, colado no TestAI.
+7. Entrega:
+   - `README.md` com uma tabela que liga cada requisito do plano ao arquivo que o cumpre **(existe)**;
+   - conferência item por item contra o plano **(existe)**: só a paginação das reviews de um jogo não usava a templatetag `url_pagina`, e foi corrigida;
+   - deploy no App Engine com o banco do Neon e as chaves (`SECRET_KEY`, `API_KEY`, `DATABASE_URL`, `GEMINI_API_KEY`) no Secret Manager **(existe)**;
+   - arquivos estáticos com hash no nome (`ManifestStaticFilesStorage`) **(existe)**;
+   - texto do repositório gerado pelo gitingest a partir da `main`, sem o PDF, as skills de terceiros e o `skills-lock.json`, colado no TestAI **(novo)**.
 
 ## 8. Dúvidas
 
 - Os pesos da recomendação (preferência declarada, nota, status) precisam de teste com dados reais para ficarem bons.
 - Quantos jogos o comando de popular o catálogo deve importar por gênero, e se ele roda também contra o banco de produção.
-- Quem é o Moderador em produção.
