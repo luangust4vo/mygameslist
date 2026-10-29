@@ -4,15 +4,19 @@ from unittest.mock import patch
 import requests
 from django.contrib.auth.models import Group, User
 from django.contrib.messages import get_messages
-from django.test import TestCase, override_settings
+from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 
+from games.models import Game, UserGameList
+
 from . import gemini
-from .models import ConfiguracaoIA, CotaUsuario, RequisicaoIA
+from .assistente import RECUSA, janela_de_mensagens, montar_instrucoes
+from .models import ConfiguracaoIA, CotaUsuario, MensagemAssistente, RequisicaoIA
 from .servicos import (
     CotaEsgotada,
     IADesativada,
     IAIndisponivel,
+    RespostaIA,
     chamar_ia,
     consumo_do_mes,
     inicio_do_mes,
@@ -127,7 +131,7 @@ class ChamarIATests(TestCase):
         self.assertEqual(args[0], "chave-teste")
         self.assertEqual(args[1], "gemini-x")
         self.assertEqual(len(args[2]), 3)
-        self.assertEqual(kwargs, {"instrucoes": "Regras", "temperatura": 0.3, "max_tokens": 512})
+        self.assertEqual(kwargs, {"instrucoes": "Regras", "temperatura": 0.3, "max_tokens": 512, "timeout": 25})
 
     def test_ia_desativada_bloqueia_sem_chamar_o_gemini(self, mock_gerar):
         self.configuracao.ativa = False
@@ -376,3 +380,226 @@ class MeuConsumoTelaTests(TelasIABase):
         response = self.client.get(reverse("ia:meu_consumo"))
 
         self.assertContains(response, "Você ainda não usou a IA.")
+
+
+AJAX = {"HTTP_X_REQUESTED_WITH": "XMLHttpRequest"}
+
+
+class IAFalsa:
+    """Substitui chamar_ia no assistente: responde conforme a finalidade."""
+
+    def __init__(self, classificacao="permitido", resposta="Experimente **Celeste**.", erro=None, erro_em=None):
+        self.classificacao = classificacao
+        self.resposta = resposta
+        self.erro = erro
+        self.erro_em = erro_em
+        self.chamadas = []
+
+    def __call__(self, user, finalidade, mensagens, **kwargs):
+        self.chamadas.append({"user": user, "finalidade": finalidade, "mensagens": mensagens, **kwargs})
+        if self.erro and self.erro_em == finalidade:
+            raise self.erro
+        texto = self.classificacao if finalidade == "classificacao" else self.resposta
+        return RespostaIA(texto=texto, tokens_total=5, requisicao=None)
+
+    def finalidades(self):
+        return [chamada["finalidade"] for chamada in self.chamadas]
+
+
+class AssistenteTests(TestCase):
+    def setUp(self):
+        self.alice = User.objects.create_user("alice", password="senha12345")
+        self.bob = User.objects.create_user("bob", password="senha12345")
+        self.url = reverse("ia:perguntar")
+        self.client.force_login(self.alice)
+
+    def perguntar(self, ia, pergunta="O que jogo depois de Hollow Knight?", **extra):
+        with patch("ia.assistente.chamar_ia", ia):
+            return self.client.post(self.url, {"pergunta": pergunta}, **extra)
+
+    def test_pergunta_por_ajax_classifica_responde_e_guarda_o_par(self):
+        ia = IAFalsa()
+
+        response = self.perguntar(ia, **AJAX)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["resposta_html"], "<p>Experimente <strong>Celeste</strong>.</p>")
+        self.assertEqual(ia.finalidades(), ["classificacao", "assistente"])
+        self.assertEqual(
+            list(MensagemAssistente.objects.values_list("papel", "texto")),
+            [("user", "O que jogo depois de Hollow Knight?"), ("model", "Experimente **Celeste**.")],
+        )
+
+    def test_classificacao_recebe_so_a_pergunta_e_tem_limite_curto(self):
+        MensagemAssistente.objects.create(user=self.alice, papel="user", texto="Pergunta antiga")
+        ia = IAFalsa()
+
+        self.perguntar(ia, **AJAX)
+
+        classificacao = ia.chamadas[0]
+        self.assertEqual(classificacao["mensagens"], "O que jogo depois de Hollow Knight?")
+        self.assertEqual((classificacao["timeout"], classificacao["temperatura"]), (10, 0))
+
+    def test_pergunta_fora_do_escopo_e_recusada_sem_resposta_nem_historico(self):
+        ia = IAFalsa(classificacao="fora")
+
+        response = self.perguntar(ia, "Qual a capital da França?", **AJAX)
+
+        self.assertEqual(response.json(), {"ok": False, "tipo": "recusa", "erro": RECUSA})
+        self.assertEqual(ia.finalidades(), ["classificacao"])
+        self.assertFalse(MensagemAssistente.objects.exists())
+
+    def test_cota_esgotada_responde_429_e_nao_guarda(self):
+        ia = IAFalsa(erro=CotaEsgotada("Sua cota de IA deste mês acabou."), erro_em="classificacao")
+
+        response = self.perguntar(ia, **AJAX)
+
+        self.assertEqual(response.status_code, 429)
+        self.assertEqual(response.json()["erro"], "Sua cota de IA deste mês acabou.")
+        self.assertFalse(MensagemAssistente.objects.exists())
+
+    def test_ia_fora_do_ar_na_resposta_responde_503_e_nao_guarda(self):
+        ia = IAFalsa(erro=IAIndisponivel("A IA está indisponível no momento."), erro_em="assistente")
+
+        response = self.perguntar(ia, **AJAX)
+
+        self.assertEqual(response.status_code, 503)
+        self.assertFalse(MensagemAssistente.objects.exists())
+
+    def test_pergunta_vazia_ou_longa_demais_e_rejeitada_sem_chamar_a_ia(self):
+        ia = IAFalsa()
+
+        vazia = self.perguntar(ia, "   ", **AJAX)
+        longa = self.perguntar(ia, "a" * 501, **AJAX)
+
+        self.assertEqual((vazia.status_code, longa.status_code), (400, 400))
+        self.assertEqual(vazia.json()["erro"], "Escreva uma pergunta.")
+        self.assertEqual(longa.json()["erro"], "A pergunta pode ter no máximo 500 caracteres.")
+        self.assertEqual(ia.chamadas, [])
+
+    def test_janela_envia_so_as_ultimas_cinco_mensagens_comecando_pelo_usuario(self):
+        for i in range(3):
+            MensagemAssistente.objects.create(user=self.alice, papel="user", texto=f"pergunta {i}")
+            MensagemAssistente.objects.create(user=self.alice, papel="model", texto=f"resposta {i}")
+        MensagemAssistente.objects.create(user=self.bob, papel="user", texto="do bob")
+
+        janela = janela_de_mensagens(self.alice, "nova")
+
+        self.assertEqual(
+            janela,
+            [("user", "pergunta 1"), ("model", "resposta 1"), ("user", "pergunta 2"), ("model", "resposta 2"), ("user", "nova")],
+        )
+
+    def test_janela_nao_comeca_por_resposta_do_assistente(self):
+        MensagemAssistente.objects.create(user=self.alice, papel="model", texto="sobrou")
+        MensagemAssistente.objects.create(user=self.alice, papel="user", texto="pergunta")
+        MensagemAssistente.objects.create(user=self.alice, papel="model", texto="resposta")
+
+        self.assertEqual(janela_de_mensagens(self.alice, "nova")[0], ("user", "pergunta"))
+
+    def test_instrucoes_tem_o_contexto_e_a_lista_do_proprio_usuario(self):
+        celeste = Game.objects.create(rawg_id=1, title="Celeste")
+        hades = Game.objects.create(rawg_id=2, title="Hades")
+        UserGameList.objects.create(user=self.alice, game=celeste, status="completed")
+        UserGameList.objects.create(user=self.bob, game=hades, status="playing")
+
+        instrucoes = montar_instrucoes(self.alice)
+
+        self.assertIn("Você é o assistente do MyGamesList", instrucoes)
+        self.assertIn("- Celeste (Zerado)", instrucoes)
+        self.assertNotIn("Hades", instrucoes)
+
+    def test_lista_no_contexto_e_limitada_a_trinta_jogos(self):
+        for i in range(35):
+            UserGameList.objects.create(user=self.alice, game=Game.objects.create(rawg_id=i, title=f"Jogo {i}"))
+
+        self.assertEqual(montar_instrucoes(self.alice).count("(Quero Jogar)"), 30)
+
+    def test_resposta_e_sanitizada(self):
+        ia = IAFalsa(resposta="Veja [lista](/minha-lista/) [x](javascript:alert(1)) <script>alert(1)</script>")
+
+        html = self.perguntar(ia, **AJAX).json()["resposta_html"]
+
+        self.assertIn('<a href="/minha-lista/" rel="nofollow noopener noreferrer">lista</a>', html)
+        self.assertNotIn("javascript", html)
+        self.assertNotIn("<script", html)
+
+    def test_sem_javascript_o_formulario_volta_para_a_tela(self):
+        ia = IAFalsa(classificacao="fora")
+
+        response = self.perguntar(ia)
+
+        self.assertRedirects(response, reverse("ia:assistente"))
+        self.assertIn(RECUSA, mensagens(response))
+
+    def test_post_sem_token_csrf_e_rejeitado(self):
+        cliente = Client(enforce_csrf_checks=True)
+        cliente.force_login(self.alice)
+
+        with patch("ia.assistente.chamar_ia", IAFalsa()) as ia:
+            response = cliente.post(self.url, {"pergunta": "Oi"}, **AJAX)
+
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(ia.chamadas, [])
+
+    def test_anonimo_e_redirecionado_ao_login(self):
+        self.client.logout()
+
+        for url in [reverse("ia:assistente"), self.url]:
+            response = self.client.post(url, {"pergunta": "Oi"}) if url == self.url else self.client.get(url)
+            self.assertEqual(response.status_code, 302)
+            self.assertIn(reverse("games:login"), response.url)
+
+
+class TelaAssistenteTests(TestCase):
+    def setUp(self):
+        self.alice = User.objects.create_user("alice", password="senha12345")
+        self.bob = User.objects.create_user("bob", password="senha12345")
+        self.client.force_login(self.alice)
+
+    def test_mostra_so_o_historico_do_proprio_usuario_com_markdown_seguro(self):
+        MensagemAssistente.objects.create(user=self.alice, papel="user", texto="<b>Oi</b>")
+        MensagemAssistente.objects.create(user=self.alice, papel="model", texto="Olá, **Alice**! <script>x</script>")
+        MensagemAssistente.objects.create(user=self.bob, papel="user", texto="Segredo do Bob")
+
+        response = self.client.get(reverse("ia:assistente"))
+
+        self.assertContains(response, "&lt;b&gt;Oi&lt;/b&gt;")
+        self.assertContains(response, "Olá, <strong>Alice</strong>!")
+        self.assertNotContains(response, "<script>x</script>")
+        self.assertNotContains(response, "Segredo do Bob")
+
+    def test_pagina_carrega_o_script_e_o_contador(self):
+        response = self.client.get(reverse("ia:assistente"))
+
+        self.assertContains(response, "js/assistente.js")
+        self.assertContains(response, 'maxlength="500"')
+        self.assertContains(response, "0/500")
+
+    def test_limpar_conversa_apaga_so_as_mensagens_do_usuario(self):
+        MensagemAssistente.objects.create(user=self.alice, papel="user", texto="Oi")
+        MensagemAssistente.objects.create(user=self.bob, papel="user", texto="Oi")
+        requisicao(self.alice, 10)
+
+        response = self.client.post(reverse("ia:limpar_conversa"))
+
+        self.assertRedirects(response, reverse("ia:assistente"))
+        self.assertIn("Conversa apagada.", mensagens(response))
+        self.assertEqual(list(MensagemAssistente.objects.values_list("user__username", flat=True)), ["bob"])
+        self.assertEqual(RequisicaoIA.objects.count(), 1)
+
+    def test_limpar_conversa_pede_confirmacao_e_nao_aceita_get(self):
+        MensagemAssistente.objects.create(user=self.alice, papel="user", texto="Oi")
+
+        pagina = self.client.get(reverse("ia:assistente"))
+
+        self.assertContains(pagina, 'data-confirmar-titulo="Limpar conversa?"')
+        self.assertEqual(self.client.get(reverse("ia:limpar_conversa")).status_code, 405)
+
+    def test_menu_mostra_o_assistente_so_para_quem_esta_logado(self):
+        logado = self.client.get(reverse("games:home"))
+        self.client.logout()
+        visitante = self.client.get(reverse("games:home"))
+
+        self.assertContains(logado, f'href="{reverse("ia:assistente")}"')
+        self.assertNotContains(visitante, f'href="{reverse("ia:assistente")}"')

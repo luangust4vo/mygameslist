@@ -69,6 +69,26 @@ class CotaUsuario(models.Model):
         return f"{self.user.username}: {self.limite_mensal or 'cota padrão'}"
 
 
+class MensagemAssistente(models.Model):
+    PAPEL_CHOICES = [
+        ("user", "Usuário"),
+        ("model", "Assistente"),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="mensagens_assistente")
+    papel = models.CharField(max_length=10, choices=PAPEL_CHOICES)
+    texto = models.TextField()
+    criada_em = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["criada_em", "pk"]
+        verbose_name = "Mensagem do assistente"
+        verbose_name_plural = "Mensagens do assistente"
+
+    def __str__(self):
+        return f"{self.user.username} ({self.get_papel_display()}): {self.texto[:40]}"  # type: ignore
+
+
 class RequisicaoIA(models.Model):
     FINALIDADE_CHOICES = [
         ("traducao", "Tradução de descrição"),

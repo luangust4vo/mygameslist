@@ -24,7 +24,7 @@ def _uso(dados):
     }
 
 
-def gerar(chave, modelo, mensagens, instrucoes='', temperatura=0.7, max_tokens=2048):
+def gerar(chave, modelo, mensagens, instrucoes='', temperatura=0.7, max_tokens=2048, timeout=TIMEOUT):
     """`mensagens` é uma lista de (papel, texto), com papel "user" ou "model"."""
     corpo = {
         'contents': [{'role': papel, 'parts': [{'text': texto}]} for papel, texto in mensagens],
@@ -38,10 +38,10 @@ def gerar(chave, modelo, mensagens, instrucoes='', temperatura=0.7, max_tokens=2
             f'{BASE_URL}/{modelo}:generateContent',
             headers={'x-goog-api-key': chave},
             json=corpo,
-            timeout=TIMEOUT,
+            timeout=timeout,
         )
     except requests.Timeout:
-        raise ErroGemini(f'Tempo esgotado ({TIMEOUT} s) esperando o Gemini.')
+        raise ErroGemini(f'Tempo esgotado ({timeout} s) esperando o Gemini.')
     except requests.RequestException as erro:
         raise ErroGemini(f'Falha de conexão com o Gemini: {type(erro).__name__}.')
 

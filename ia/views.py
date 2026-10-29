@@ -3,6 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.db.models import Q, Sum, Value
 from django.db.models.functions import Coalesce
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views import View
@@ -11,10 +12,20 @@ from django_filters.views import FilterView
 
 from games.mixins import GroupRequiredMixin
 
+from games.sanitize import markdown_seguro
+
+from .assistente import TAMANHO_MAXIMO, ForaDoEscopo, responder
 from .filters import RequisicaoIAFilter
-from .forms import ConfiguracaoIAForm, CotaUsuarioForm
-from .models import ConfiguracaoIA, CotaUsuario, RequisicaoIA
-from .servicos import ErroIA, chamar_ia, consumo_do_mes, inicio_do_mes, limite_mensal
+from .forms import ConfiguracaoIAForm, CotaUsuarioForm, PerguntaForm
+from .models import ConfiguracaoIA, CotaUsuario, MensagemAssistente, RequisicaoIA
+from .servicos import (
+    CotaEsgotada,
+    ErroIA,
+    chamar_ia,
+    consumo_do_mes,
+    inicio_do_mes,
+    limite_mensal,
+)
 
 
 class ModeradorMixin(LoginRequiredMixin, GroupRequiredMixin):
@@ -127,3 +138,66 @@ class MeuConsumoView(LoginRequiredMixin, ListView):
         context["restante"] = max(limite - usado, 0)
         context["percentual"] = min(round(usado * 100 / limite), 100) if limite else 100
         return context
+
+
+class AssistenteView(LoginRequiredMixin, ListView):
+    template_name = "games/ia/assistente.html"
+    context_object_name = "mensagens"
+
+    def get_queryset(self):
+        return MensagemAssistente.objects.filter(user=self.request.user)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["form"] = PerguntaForm()
+        context["tamanho_maximo"] = TAMANHO_MAXIMO
+        return context
+
+
+class PerguntarView(LoginRequiredMixin, View):
+    """Recebe a pergunta por AJAX ($.ajax com CSRF) e responde em JSON.
+
+    Sem JavaScript, o formulário é enviado normalmente e a resposta volta pela página.
+    """
+
+    def post(self, request):
+        ajax = request.headers.get("x-requested-with") == "XMLHttpRequest"
+        form = PerguntaForm(request.POST)
+        if not form.is_valid():
+            erro = form.errors["pergunta"][0]
+            return self.falha(request, ajax, erro, status=400)
+
+        pergunta = form.cleaned_data["pergunta"]
+        try:
+            mensagem = responder(request.user, pergunta)
+        except ForaDoEscopo as erro:
+            return self.falha(request, ajax, str(erro), status=200, tipo="recusa")
+        except CotaEsgotada as erro:
+            return self.falha(request, ajax, str(erro), status=429)
+        except ErroIA as erro:
+            return self.falha(request, ajax, str(erro), status=503)
+
+        if ajax:
+            return JsonResponse(
+                {"ok": True, "pergunta": pergunta, "resposta_html": markdown_seguro(mensagem.texto)}
+            )
+        return redirect("ia:assistente")
+
+    def falha(self, request, ajax, erro, status, tipo="erro"):
+        if ajax:
+            return JsonResponse({"ok": False, "tipo": tipo, "erro": erro}, status=status)
+        if tipo == "recusa":
+            messages.info(request, erro)
+        else:
+            messages.error(request, erro)
+        return redirect("ia:assistente")
+
+
+class LimparConversaView(LoginRequiredMixin, View):
+    def post(self, request):
+        apagadas, _ = MensagemAssistente.objects.filter(user=request.user).delete()
+        if apagadas:
+            messages.success(request, "Conversa apagada.")
+        else:
+            messages.info(request, "A conversa já estava vazia.")
+        return redirect("ia:assistente")

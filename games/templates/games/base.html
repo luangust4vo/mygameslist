@@ -36,6 +36,9 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'games:my_list' %}"{% if url_name == "my_list" or url_name == "add_to_list" or url_name == "edit_list_item" or url_name == "remove_from_list" %} aria-current="page"{% endif %}>Minha Lista</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'ia:assistente' %}"{% if url_name == "assistente" %} aria-current="page"{% endif %}>Assistente</a>
+                        </li>
                         {% if request.user|has_group:"Moderador" %}
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle{% if url_name == 'moderation_panel' or namespace == 'ia' and url_name != 'meu_consumo' %} active{% endif %}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Moderação</a>

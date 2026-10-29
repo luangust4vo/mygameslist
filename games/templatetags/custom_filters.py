@@ -3,7 +3,7 @@ from django import template
 from django.utils.safestring import mark_safe
 
 from games.generos import traduzir_genero
-from games.sanitize import description_to_html
+from games.sanitize import description_to_html, markdown_seguro
 
 register = template.Library()
 
@@ -25,6 +25,11 @@ def render_markdown(text):
 @register.filter
 def descricao(text):
     return mark_safe(description_to_html(text))
+
+
+@register.filter
+def resposta_assistente(texto):
+    return mark_safe(markdown_seguro(texto))
 
 
 @register.filter

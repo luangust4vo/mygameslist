@@ -864,6 +864,106 @@ a {
     margin: 0;
 }
 
+/* ---------- Assistente ---------- */
+
+.assistente {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.assistente-conversa {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    min-height: 12rem;
+    max-height: 60vh;
+    overflow-y: auto;
+    padding-right: 0.25rem;
+}
+
+.assistente-vazio {
+    margin: auto;
+    max-width: 32rem;
+    text-align: center;
+    color: var(--mgl-muted);
+}
+
+.assistente-msg {
+    max-width: 85%;
+    padding: 0.75rem 1rem;
+    border-radius: var(--mgl-radius-panel);
+    line-height: 1.55;
+    overflow-wrap: anywhere;
+}
+
+.assistente-msg > :last-child {
+    margin-bottom: 0;
+}
+
+.assistente-msg-user {
+    align-self: flex-end;
+    background: var(--mgl-panel-raised);
+    border: 1px solid var(--mgl-line-strong);
+}
+
+.assistente-msg-model {
+    align-self: flex-start;
+    background: var(--mgl-ink-deep);
+    border: 1px solid var(--mgl-line);
+}
+
+.assistente-msg-model a {
+    color: var(--mgl-accent);
+}
+
+.assistente-msg-model h2,
+.assistente-msg-model h3,
+.assistente-msg-model h4 {
+    font-size: var(--mgl-size-md);
+    font-weight: 700;
+    margin: 0.75rem 0 0.5rem;
+}
+
+.assistente-msg-model pre {
+    padding: 0.75rem;
+    background: var(--mgl-panel);
+    border-radius: var(--mgl-radius-cover);
+    white-space: pre-wrap;
+}
+
+.assistente-msg-model blockquote {
+    padding-left: 0.75rem;
+    border-left: 3px solid var(--mgl-line-strong);
+    color: var(--mgl-muted);
+}
+
+.assistente-pensando {
+    color: var(--mgl-muted);
+    font-style: italic;
+}
+
+.assistente-recusa {
+    border-color: var(--mgl-status-paused);
+}
+
+.assistente-erro {
+    border-color: var(--mgl-danger);
+    color: var(--mgl-danger);
+}
+
+.assistente-form textarea {
+    resize: vertical;
+}
+
+.assistente-acoes {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+}
+
 .mgl-review {
     border-bottom: 1px solid var(--mgl-line);
     padding-block: 1.25rem;

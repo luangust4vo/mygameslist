@@ -70,7 +70,9 @@ def _normalizar(mensagens):
     return list(mensagens)
 
 
-def chamar_ia(user, finalidade, mensagens, instrucoes='', max_tokens=None, temperatura=None):
+def chamar_ia(
+    user, finalidade, mensagens, instrucoes='', max_tokens=None, temperatura=None, timeout=gemini.TIMEOUT
+):
     """Chama o Gemini respeitando a configuração e a cota, e registra a chamada.
 
     `user` pode ser None em chamadas do sistema (não contam cota de ninguém).
@@ -111,6 +113,7 @@ def chamar_ia(user, finalidade, mensagens, instrucoes='', max_tokens=None, tempe
             instrucoes=instrucoes,
             temperatura=configuracao.temperatura if temperatura is None else temperatura,
             max_tokens=max_tokens or configuracao.max_tokens,
+            timeout=timeout,
         )
     except gemini.ErroGemini as erro:
         requisicao.status = 'erro'
