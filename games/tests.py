@@ -912,3 +912,16 @@ class RetraduzirDescricaoTests(TestCase):
         response = self.client.get(self.pagina)
 
         self.assertContains(response, "Descrição traduzida por IA a partir do original em inglês")
+
+
+class ReviewListaPaginacaoTests(TestCase):
+    def test_paginacao_das_reviews_usa_a_templatetag(self):
+        jogo = Game.objects.create(rawg_id=1, title="Celeste")
+        for i in range(11):
+            usuario = User.objects.create_user(f"jogador{i}", password="senha12345")
+            Review.objects.create(user=usuario, game=jogo, rating=4, title=f"Review {i}")
+
+        response = self.client.get(reverse("games:reviews_list", args=[jogo.pk]), {"page": 1})
+
+        self.assertContains(response, 'href="?page=2"')
+        self.assertContains(response, "1 de 2")
