@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Cota de {{ object.user.username }} — MyGamesList{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <a href="{% url 'ia:usuarios' %}" class="mgl-back">← IA por usuário</a>
+        <h1 class="h2 mgl-page-title">Cota de {{ object.user.username }}</h1>
+        <form method="post" class="mgl-panel">
+            {% csrf_token %}
+            <p class="mgl-empty">
+                Consumo neste mês: {{ consumo_mes|floatformat:"0g" }} tokens.
+                Cota padrão: {{ cota_padrao|floatformat:"0g" }} tokens.
+            </p>
+            {{ form|crispy }}
+            <div class="d-flex gap-2 mt-3">
+                <button type="submit" class="btn btn-primary">Salvar</button>
+                <a href="{% url 'ia:usuarios' %}" class="btn btn-outline-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

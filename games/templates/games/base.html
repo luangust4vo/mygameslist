@@ -17,7 +17,7 @@
 </head>
 
 <body>
-    {% with url_name=request.resolver_match.url_name %}
+    {% with url_name=request.resolver_match.url_name namespace=request.resolver_match.namespace %}
     <nav class="navbar navbar-expand-lg mgl-nav">
         <div class="container">
             <a class="navbar-brand mgl-brand" href="{% url 'games:home' %}"><span class="mgl-brand-mark" aria-hidden="true"></span>MyGamesList</a>
@@ -37,14 +37,24 @@
                             <a class="nav-link" href="{% url 'games:my_list' %}"{% if url_name == "my_list" or url_name == "add_to_list" or url_name == "edit_list_item" or url_name == "remove_from_list" %} aria-current="page"{% endif %}>Minha Lista</a>
                         </li>
                         {% if request.user|has_group:"Moderador" %}
-                            <li class="nav-item">
-                                <a class="nav-link" href="{% url 'games:moderation_panel' %}"{% if url_name == "moderation_panel" %} aria-current="page"{% endif %}>Moderação</a>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle{% if url_name == 'moderation_panel' or namespace == 'ia' and url_name != 'meu_consumo' %} active{% endif %}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Moderação</a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="{% url 'games:moderation_panel' %}"{% if url_name == "moderation_panel" %} aria-current="page"{% endif %}>Reviews</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="{% url 'ia:requisicoes' %}"{% if namespace == "ia" and url_name == "requisicoes" %} aria-current="page"{% endif %}>Requisições de IA</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'ia:configuracao' %}"{% if namespace == "ia" and url_name == "configuracao" %} aria-current="page"{% endif %}>Configuração da IA</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'ia:usuarios' %}"{% if namespace == "ia" and url_name == "usuarios" or url_name == "editar_cota" %} aria-current="page"{% endif %}>IA por usuário</a></li>
+                                </ul>
                             </li>
                         {% endif %}
                     {% endif %}
                 </ul>
                 <ul class="navbar-nav">
                     {% if request.user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'ia:meu_consumo' %}"{% if url_name == "meu_consumo" %} aria-current="page"{% endif %}>Meu consumo de IA</a>
+                        </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'games:password_change' %}"{% if url_name == "password_change" or url_name == "password_change_done" %} aria-current="page"{% endif %}>{{ request.user.username|pretty_username }}</a>
                         </li>

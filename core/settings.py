@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     # My Apps
     "games",
+    "ia",
     # External Apps
     "crispy_forms",
     "crispy_bootstrap5",
@@ -127,6 +128,7 @@ def get_config_value(name, default=None, required_in_cloud=False):
 
 # External API Settings
 API_KEY = get_config_value("API_KEY", required_in_cloud=True)
+GEMINI_API_KEY = get_config_value("GEMINI_API_KEY", default="")
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases

@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %}IA por usuário — MyGamesList{% endblock %}
+
+{% block content %}
+<h1 class="mgl-page-title">IA por usuário</h1>
+{% include "ia/_abas.html" with ativa="usuarios" %}
+
+<p class="mgl-empty">Consumo de tokens neste mês. A cota padrão é de {{ cota_padrao|floatformat:"0g" }} tokens.</p>
+
+<div class="table-responsive">
+    <table class="table align-middle">
+        <thead>
+            <tr>
+                <th>Usuário</th>
+                <th class="text-end">Consumo do mês</th>
+                <th class="text-end">Limite</th>
+                <th>Uso</th>
+                <th><span class="visually-hidden">Ações</span></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for usuario in usuarios %}
+            <tr>
+                <td>{{ usuario.username }}</td>
+                <td class="text-end">{{ usuario.consumo_mes|floatformat:"0g" }}</td>
+                <td class="text-end">
+                    {{ usuario.limite|floatformat:"0g" }}
+                    {% if usuario.limite != cota_padrao %}<span class="mgl-card-meta d-block">personalizado</span>{% endif %}
+                </td>
+                <td class="ia-uso-coluna">
+                    {% widthratio usuario.consumo_mes usuario.limite 100 as percentual %}
+                    {% include "ia/_barra.html" with percentual=percentual rotulo=usuario.username %}
+                </td>
+                <td class="text-end">
+                    <a href="{% url 'ia:editar_cota' usuario.pk %}" class="btn btn-sm btn-outline-primary">Editar cota</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% include "comum/_paginacao.html" with page_obj=page_obj rotulo="Páginas de usuários" %}
+{% endblock %}

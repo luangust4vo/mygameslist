@@ -784,6 +784,86 @@ a {
     margin-bottom: 0.25rem;
 }
 
+/* ---------- Telas de IA ---------- */
+
+.nav-pills {
+    --bs-nav-pills-link-active-bg: var(--mgl-accent);
+    --bs-nav-pills-link-active-color: var(--mgl-accent-ink);
+}
+
+
+.ia-status {
+    display: inline-block;
+    padding: 0.15rem 0.6rem;
+    border-radius: var(--mgl-radius-pill);
+    font-size: var(--mgl-size-xs);
+    font-weight: 600;
+    color: var(--mgl-status-ink);
+}
+
+.ia-status-sucesso { background: var(--mgl-status-completed); }
+.ia-status-erro { background: var(--mgl-danger); }
+.ia-status-bloqueada { background: var(--mgl-status-paused); }
+
+.ia-tabela td {
+    white-space: nowrap;
+}
+
+.ia-detalhes summary {
+    cursor: pointer;
+    color: var(--mgl-accent);
+}
+
+.ia-detalhes[open] {
+    min-width: min(32rem, 80vw);
+}
+
+.ia-detalhes pre {
+    max-height: 16rem;
+    overflow: auto;
+    white-space: pre-wrap;
+    padding: 0.75rem;
+    background: var(--mgl-ink-deep);
+    border: 1px solid var(--mgl-line);
+    border-radius: var(--mgl-radius-cover);
+    color: var(--mgl-text);
+}
+
+.ia-erro {
+    color: var(--mgl-danger);
+}
+
+.ia-uso-coluna {
+    min-width: 8rem;
+}
+
+.ia-barra {
+    height: 0.6rem;
+    background: var(--mgl-ink-deep);
+}
+
+.ia-barra .progress-bar { background: var(--mgl-status-completed); }
+.ia-barra-alerta .progress-bar { background: var(--mgl-status-paused); }
+.ia-barra-esgotada .progress-bar { background: var(--mgl-danger); }
+
+.ia-resumo {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--mgl-gap);
+}
+
+.ia-resumo dt {
+    color: var(--mgl-muted);
+    font-weight: 400;
+    font-size: var(--mgl-size-xs);
+}
+
+.ia-resumo dd {
+    font-size: var(--mgl-size-xl);
+    font-weight: 700;
+    margin: 0;
+}
+
 .mgl-review {
     border-bottom: 1px solid var(--mgl-line);
     padding-block: 1.25rem;

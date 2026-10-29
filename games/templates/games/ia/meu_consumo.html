@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}Meu consumo de IA — MyGamesList{% endblock %}
+
+{% block content %}
+<h1 class="mgl-page-title">Meu consumo de IA</h1>
+
+<section class="mgl-panel mb-4" aria-labelledby="cota-mes">
+    <h2 class="h4" id="cota-mes">Cota deste mês</h2>
+    <dl class="ia-resumo">
+        <div><dt>Usado</dt><dd>{{ usado|floatformat:"0g" }}</dd></div>
+        <div><dt>Limite</dt><dd>{{ limite|floatformat:"0g" }}</dd></div>
+        <div><dt>Restante</dt><dd>{{ restante|floatformat:"0g" }}</dd></div>
+    </dl>
+    {% include "ia/_barra.html" with percentual=percentual rotulo="você" %}
+    <p class="mgl-card-meta mt-2 mb-0">Valores em tokens. A cota volta a zero no primeiro dia de cada mês.</p>
+</section>
+
+<h2 class="h4">Minhas requisições</h2>
+{% if requisicoes %}
+<div class="table-responsive">
+    <table class="table align-middle">
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>Finalidade</th>
+                <th>Status</th>
+                <th class="text-end">Tokens</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for requisicao in requisicoes %}
+            <tr>
+                <td>{{ requisicao.criada_em|date:"d/m/Y H:i" }}</td>
+                <td>{{ requisicao.get_finalidade_display }}</td>
+                <td>{% include "ia/_status.html" %}</td>
+                <td class="text-end">{{ requisicao.tokens_total|floatformat:"0g" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% include "comum/_paginacao.html" with page_obj=page_obj rotulo="Páginas das minhas requisições" %}
+{% else %}
+<p class="mgl-empty">Você ainda não usou a IA. As traduções de descrição e o assistente aparecem aqui.</p>
+{% endif %}
+{% endblock %}

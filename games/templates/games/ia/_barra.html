@@ -1,0 +1,5 @@
+{% comment %}Barra de uso da cota. Parâmetros: percentual (0 a 100+) e rotulo.{% endcomment %}
+<div class="progress ia-barra{% if percentual|add:0 >= 100 %} ia-barra-esgotada{% elif percentual|add:0 >= 80 %} ia-barra-alerta{% endif %}"
+     role="progressbar" aria-label="Uso da cota de {{ rotulo }}" aria-valuenow="{{ percentual }}" aria-valuemin="0" aria-valuemax="100">
+    <div class="progress-bar" style="width: {% if percentual|add:0 > 100 %}100{% else %}{{ percentual }}{% endif %}%"></div>
+</div>
