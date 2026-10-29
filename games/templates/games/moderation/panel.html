@@ -1,9 +1,12 @@
 {% extends 'base.html' %}
 
-{% block title %}Painel de Moderação — MyGameList{% endblock %}
+{% block title %}Moderação — MyGamesList{% endblock %}
 
 {% block content %}
-<h2 class="mb-4">Painel de Moderação</h2>
+<h1 class="mgl-page-title">Painel de moderação</h1>
+
+{% if has_reviews %}
+{% include "comum/_filtros.html" with filtro=filter rotulo="Filtrar reviews" %}
 
 {% if reviews %}
 <div class="table-responsive">
@@ -15,7 +18,7 @@
                 <th>Nota</th>
                 <th>Título</th>
                 <th>Data</th>
-                <th></th>
+                <th><span class="visually-hidden">Ações</span></th>
             </tr>
         </thead>
         <tbody>
@@ -23,23 +26,25 @@
             <tr>
                 <td>{{ review.user.username }}</td>
                 <td>{{ review.game.title }}</td>
-                <td><span class="badge bg-primary">{{ review.get_rating_display }}</span></td>
+                <td><span class="mgl-rating"><b>{{ review.rating }}</b>{{ review.get_rating_display }}</span></td>
                 <td>{{ review.title }}</td>
                 <td>{{ review.created_at|date:"d/m/Y" }}</td>
-                <td class="d-flex gap-2">
-                    <a href="{% url 'games:review_details' review.game.pk review.pk %}" class="btn btn-sm btn-outline-secondary">
-                        Ver
-                    </a>
-                    <form method="post" action="{% url 'games:delete_review' review.game.pk review.pk %}">
-                        {% csrf_token %}
-                        <button
-                            type="submit"
-                            class="btn btn-sm btn-outline-danger"
-                            onclick="return confirm('Excluir a review de {{ review.user.username }}?');"
+                <td>
+                    <div class="d-flex gap-2 justify-content-end">
+                        <a href="{% url 'games:review_details' review.game.pk review.pk %}" class="btn btn-sm btn-outline-secondary">
+                            Ver
+                        </a>
+                        <form
+                            method="post"
+                            action="{% url 'games:delete_review' review.game.pk review.pk %}"
+                            data-confirmar="A review de {{ review.user.username }} sobre {{ review.game.title }} será apagada e não poderá ser recuperada."
+                            data-confirmar-titulo="Excluir review?"
+                            data-confirmar-botao="Excluir review"
                         >
-                            Excluir
-                        </button>
-                    </form>
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Excluir</button>
+                        </form>
+                    </div>
                 </td>
             </tr>
             {% endfor %}
@@ -47,27 +52,13 @@
     </table>
 </div>
 
-{% if is_paginated %}
-<nav class="mt-4">
-    <ul class="pagination justify-content-center">
-        {% if page_obj.has_previous %}
-            <li class="page-item">
-                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Anterior</a>
-            </li>
-        {% endif %}
-        <li class="page-item disabled">
-            <span class="page-link">{{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
-        </li>
-        {% if page_obj.has_next %}
-            <li class="page-item">
-                <a class="page-link" href="?page={{ page_obj.next_page_number }}">Próxima</a>
-            </li>
-        {% endif %}
-    </ul>
-</nav>
+{% include "comum/_paginacao.html" with page_obj=page_obj rotulo="Páginas de reviews" %}
+
+{% else %}
+<p class="mgl-empty">Nenhuma review combina com esses filtros. <a href="{{ request.path }}">Limpar filtros</a></p>
 {% endif %}
 
 {% else %}
-<p class="text-muted">Nenhuma review cadastrada ainda.</p>
+<p class="mgl-empty">Nenhuma review publicada ainda.</p>
 {% endif %}
 {% endblock %}

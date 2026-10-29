@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from django.contrib.messages import constants as messages
 from django.core.exceptions import ImproperlyConfigured
 from dotenv import load_dotenv
 from urllib.parse import urlparse, parse_qsl
@@ -19,9 +20,7 @@ DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
 ALLOWED_HOSTS = [
     host.strip()
-    for host in os.getenv("ALLOWED_HOSTS", "mygameslist-497823.rj.r.appspot.com").split(
-        ","
-    )
+    for host in os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1,[::1]").split(",")
     if host.strip()
 ]
 
@@ -36,25 +35,15 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     # My Apps
     "games",
+    "ia",
     # External Apps
     "crispy_forms",
     "crispy_bootstrap5",
+    "django_filters",
 ]
 
 if DEBUG:
     INSTALLED_APPS += ["debug_toolbar"]
-
-MIDDLEWARE = [
-    "django.middleware.security.SecurityMiddleware",
-]
-
-if DEBUG:
-    MIDDLEWARE.insert(1, "debug_toolbar.middleware.DebugToolbarMiddleware")
-
-MIDDLEWARE += [
-    "django.contrib.sessions.middleware.SessionMiddleware",
-    # ... resto igual
-]
 
 INTERNAL_IPS = ["127.0.0.1"]
 
@@ -67,6 +56,8 @@ LOGIN_REDIRECT_URL = "games:home"
 LOGOUT_REDIRECT_URL = "games:home"
 LOGIN_URL = "games:login"
 
+MESSAGE_TAGS = {messages.ERROR: "danger"}
+
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -76,6 +67,9 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+if DEBUG:
+    MIDDLEWARE.insert(1, "debug_toolbar.middleware.DebugToolbarMiddleware")
 
 ROOT_URLCONF = "core.urls"
 
@@ -134,6 +128,7 @@ def get_config_value(name, default=None, required_in_cloud=False):
 
 # External API Settings
 API_KEY = get_config_value("API_KEY", required_in_cloud=True)
+GEMINI_API_KEY = get_config_value("GEMINI_API_KEY", default="")
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases

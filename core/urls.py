@@ -4,6 +4,7 @@ from django.conf import settings
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("", include("ia.urls")),
     path("", include("games.urls")),
 ]
 

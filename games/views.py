@@ -15,9 +15,13 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth import login
 from django.urls import reverse_lazy
 from django.contrib import messages
+from django_filters.views import FilterView
 from .rawg import get
-from .services import import_game
+from ia.servicos import ErroIA
+
+from .services import import_game, traduzir_descricao
 from .models import Game, Review, UserGameList, Activity
+from .filters import ReviewModerationFilter, UserGameListFilter
 from .forms import ReviewForm, UserGameListForm
 
 
@@ -32,6 +36,11 @@ class HomeView(TemplateView):
         context["top_rated_games"] = Game.objects.filter(local_rating__gt=0).order_by(
             "-local_rating"
         )[:6]
+        context["featured_games"] = (
+            Game.objects.filter(rawg_rating__gt=0)
+            .prefetch_related("genres")
+            .order_by("-rawg_rating")[:6]
+        )
         context["recent_games"] = Game.objects.order_by("-id")[:6]
         return context
 
@@ -85,9 +94,9 @@ class SearchGameView(View):
         )
 
 
-class ImportGamesView(View):
+class ImportGamesView(LoginRequiredMixin, View):
     def post(self, request, id):
-        game = import_game(id)
+        game = import_game(id, user=request.user)
         if game:
             return redirect("games:game_details", pk=game.pk)
         messages.error(request, "Não foi possível importar o game.")
@@ -103,6 +112,27 @@ class GameDetailsView(View):
                 user=request.user, game=game
             ).first()
         return render(request, "games/game/details.html", context)
+
+
+class RetraduzirDescricaoView(LoginRequiredMixin, GroupRequiredMixin, View):
+    group_required = "Moderador"
+
+    def post(self, request, pk):
+        game = get_object_or_404(Game, pk=pk)
+        if not game.description:
+            messages.error(request, "Este jogo não tem descrição original para traduzir.")
+        elif not game.pode_retraduzir:
+            messages.error(
+                request, "A descrição em português veio da Steam e não pode ser substituída pela IA."
+            )
+        else:
+            try:
+                traduzir_descricao(game, request.user)
+            except ErroIA as erro:
+                messages.error(request, f"Não foi possível traduzir a descrição. {erro}")
+            else:
+                messages.success(request, "Descrição traduzida pela IA.")
+        return redirect("games:game_details", pk=game.pk)
 
 
 class ReviewListView(ListView):
@@ -136,18 +166,43 @@ class ReviewCreateView(LoginRequiredMixin, CreateView):
     form_class = ReviewForm
     template_name = "games/review/form.html"
 
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return self.handle_no_permission()
+
+        self.game = get_object_or_404(Game, pk=self.kwargs["pk"])
+        existing = Review.objects.filter(user=request.user, game=self.game).first()
+        if existing:
+            messages.info(request, "Você já avaliou este jogo. Edite sua review.")
+            return redirect(
+                "games:edit_review", pk=self.game.pk, review_pk=existing.pk
+            )
+        if not UserGameList.objects.filter(user=request.user, game=self.game).exists():
+            messages.error(
+                request, "Adicione o jogo à sua lista antes de avaliá-lo."
+            )
+            return redirect("games:add_to_list", pk=self.game.pk)
+        return super().dispatch(request, *args, **kwargs)
+
     def form_valid(self, form):
         form.instance.user = self.request.user
-        form.instance.game = get_object_or_404(Game, pk=self.kwargs["pk"])
+        form.instance.game = self.game
+        response = super().form_valid(form)
+        Activity.objects.create(
+            user=self.request.user,
+            game=self.game,
+            action="reviewed",
+            detail=f"Avaliou como {self.object.get_rating_display()}",  # type: ignore
+        )
         messages.success(self.request, "Review publicada com sucesso!")
-        return super().form_valid(form)
+        return response
 
     def get_success_url(self):
         return reverse_lazy("games:review_details", kwargs={"pk": self.object.game.pk, "review_pk": self.object.pk})  # type: ignore
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["game"] = get_object_or_404(Game, pk=self.kwargs["pk"])
+        context["game"] = self.game
         context["title"] = "Nova Review"
         return context
 
@@ -181,8 +236,8 @@ class ReviewDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     context_object_name = "review"
     pk_url_kwarg = "review_pk"
 
-    def get(self):
-        return redirect("games:reviews_list")
+    def get(self, request, *args, **kwargs):
+        return redirect("games:reviews_list", pk=kwargs["pk"])
 
     def test_func(self):
         review = self.get_object()
@@ -194,8 +249,9 @@ class ReviewDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         return reverse_lazy("games:reviews_list", kwargs={"pk": self.object.game.pk})  # type: ignore
 
 
-class MyGameListView(LoginRequiredMixin, ListView):
+class MyGameListView(LoginRequiredMixin, FilterView):
     model = UserGameList
+    filterset_class = UserGameListFilter
     template_name = "games/list/user_games_list.html"
     context_object_name = "items"
     paginate_by = 12
@@ -205,6 +261,11 @@ class MyGameListView(LoginRequiredMixin, ListView):
             "game"
         )
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["has_items"] = UserGameList.objects.filter(user=self.request.user).exists()
+        return context
+
 
 class AddToListView(LoginRequiredMixin, CreateView):
     model = UserGameList
@@ -212,6 +273,9 @@ class AddToListView(LoginRequiredMixin, CreateView):
     template_name = "games/list/manage_item_list.html"
 
     def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return self.handle_no_permission()
+
         self.game = get_object_or_404(Game, pk=self.kwargs["pk"])
         existing = UserGameList.objects.filter(
             user=request.user, game=self.game
@@ -292,8 +356,9 @@ class RemoveFromListView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         return reverse_lazy("games:my_list")
 
 
-class ModerationPanelView(LoginRequiredMixin, GroupRequiredMixin, ListView):
+class ModerationPanelView(LoginRequiredMixin, GroupRequiredMixin, FilterView):
     model = Review
+    filterset_class = ReviewModerationFilter
     template_name = "games/moderation/panel.html"
     context_object_name = "reviews"
     group_required = "Moderador"
@@ -301,3 +366,8 @@ class ModerationPanelView(LoginRequiredMixin, GroupRequiredMixin, ListView):
 
     def get_queryset(self):
         return Review.objects.select_related("user", "game").order_by("-created_at")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["has_reviews"] = Review.objects.exists()
+        return context

@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% load static custom_filters %}
+
+{% block title %}Assistente — MyGamesList{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-9">
+        <div class="d-flex flex-wrap align-items-start justify-content-between gap-2 mgl-page-title">
+            <div>
+                <h1 class="mb-1">Assistente</h1>
+                <p class="mgl-empty mb-0">Pergunte sobre jogos ou sobre como usar o MyGamesList.</p>
+            </div>
+            {% if mensagens %}
+                <form
+                    method="post"
+                    action="{% url 'ia:limpar_conversa' %}"
+                    data-confirmar="O histórico desta conversa será apagado e não poderá ser recuperado."
+                    data-confirmar-titulo="Limpar conversa?"
+                    data-confirmar-botao="Limpar conversa"
+                >
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-outline-danger">Limpar conversa</button>
+                </form>
+            {% endif %}
+        </div>
+
+        <section class="mgl-panel assistente">
+            <div class="assistente-conversa" id="conversa" role="log" aria-live="polite" aria-label="Conversa com o assistente">
+                {% for mensagem in mensagens %}
+                    {% if mensagem.papel == "user" %}
+                        <div class="assistente-msg assistente-msg-user"><p>{{ mensagem.texto|linebreaksbr }}</p></div>
+                    {% else %}
+                        <div class="assistente-msg assistente-msg-model">{{ mensagem.texto|resposta_assistente }}</div>
+                    {% endif %}
+                {% empty %}
+                    <p class="assistente-vazio">
+                        Ainda não há conversa. Experimente: “Gostei de Hollow Knight, o que jogo depois?”
+                        ou “Como escrevo uma review?”
+                    </p>
+                {% endfor %}
+            </div>
+
+            <form method="post" action="{% url 'ia:perguntar' %}" id="form-pergunta" class="assistente-form">
+                {% csrf_token %}
+                <label for="id_pergunta" class="visually-hidden">Sua pergunta</label>
+                <textarea
+                    name="pergunta"
+                    id="id_pergunta"
+                    rows="2"
+                    maxlength="{{ tamanho_maximo }}"
+                    class="form-control"
+                    placeholder="Escreva sua pergunta"
+                    aria-describedby="contador-pergunta dica-pergunta"
+                    required
+                ></textarea>
+                <div class="assistente-acoes">
+                    <span class="mgl-card-meta" id="dica-pergunta">Enter envia, Shift+Enter quebra a linha.</span>
+                    <span class="mgl-card-meta ms-auto" id="contador-pergunta" aria-live="polite">0/{{ tamanho_maximo }}</span>
+                    <button type="submit" class="btn btn-primary">Enviar</button>
+                </div>
+            </form>
+        </section>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+    {{ block.super }}
+    <script src="{% static 'js/assistente.js' %}"></script>
+{% endblock %}

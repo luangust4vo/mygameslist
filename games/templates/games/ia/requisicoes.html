@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}Requisições de IA — MyGamesList{% endblock %}
+
+{% block content %}
+<h1 class="mgl-page-title">Requisições de IA</h1>
+{% include "ia/_abas.html" with ativa="requisicoes" %}
+
+{% include "comum/_filtros.html" with filtro=filter rotulo="Filtrar requisições" %}
+
+{% if requisicoes %}
+<div class="table-responsive">
+    <table class="table align-middle ia-tabela">
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>Usuário</th>
+                <th>Finalidade</th>
+                <th>Status</th>
+                <th>Modelo</th>
+                <th class="text-end">Tokens</th>
+                <th class="text-end">Duração</th>
+                <th><span class="visually-hidden">Detalhes</span></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for requisicao in requisicoes %}
+            <tr>
+                <td>{{ requisicao.criada_em|date:"d/m/Y H:i" }}</td>
+                <td>{{ requisicao.user.username|default:"sistema" }}</td>
+                <td>{{ requisicao.get_finalidade_display }}</td>
+                <td>{% include "ia/_status.html" %}</td>
+                <td><code>{{ requisicao.modelo }}</code></td>
+                <td class="text-end">{{ requisicao.tokens_total|floatformat:"0g" }}</td>
+                <td class="text-end">{{ requisicao.duracao_ms|floatformat:"0g" }} ms</td>
+                <td>
+                    <details class="ia-detalhes">
+                        <summary>Ver</summary>
+                        {% if requisicao.erro %}<p class="ia-erro"><strong>Erro:</strong> {{ requisicao.erro }}</p>{% endif %}
+                        <p><strong>Entrada</strong> ({{ requisicao.tokens_entrada|floatformat:"0g" }} tokens)</p>
+                        <pre>{{ requisicao.entrada }}</pre>
+                        {% if requisicao.saida %}
+                            <p><strong>Saída</strong> ({{ requisicao.tokens_saida|floatformat:"0g" }} tokens)</p>
+                            <pre>{{ requisicao.saida }}</pre>
+                        {% endif %}
+                    </details>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% include "comum/_paginacao.html" with page_obj=page_obj rotulo="Páginas de requisições" %}
+{% else %}
+<p class="mgl-empty">Nenhuma requisição encontrada.</p>
+{% endif %}
+{% endblock %}

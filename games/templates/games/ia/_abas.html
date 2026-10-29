@@ -1,0 +1,16 @@
+{% comment %}
+Abas das telas de IA do Moderador. Parâmetro: ativa (requisicoes, configuracao ou usuarios).
+{% endcomment %}
+<nav class="mb-4" aria-label="Telas de IA">
+    <ul class="nav nav-pills gap-2">
+        <li class="nav-item">
+            <a class="nav-link{% if ativa == 'requisicoes' %} active{% endif %}" href="{% url 'ia:requisicoes' %}"{% if ativa == 'requisicoes' %} aria-current="page"{% endif %}>Requisições</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link{% if ativa == 'configuracao' %} active{% endif %}" href="{% url 'ia:configuracao' %}"{% if ativa == 'configuracao' %} aria-current="page"{% endif %}>Configuração</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link{% if ativa == 'usuarios' %} active{% endif %}" href="{% url 'ia:usuarios' %}"{% if ativa == 'usuarios' %} aria-current="page"{% endif %}>IA por usuário</a>
+        </li>
+    </ul>
+</nav>

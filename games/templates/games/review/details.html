@@ -1,72 +1,38 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ review.title }} — MyGameList{% endblock %}
+{% block title %}{{ review.title }} — MyGamesList{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
-    <div class="col-md-8">
-        <div class="mb-3">
-            <a href="{% url 'games:game_details' review.game.pk %}" class="text-muted">
-                ← {{ review.game.title }}
+    <div class="col-lg-8">
+        <a href="{% url 'games:game_details' review.game.pk %}" class="mgl-back">← {{ review.game.title }}</a>
+
+        <article>
+            <span class="mgl-rating mb-3"><b>{{ review.rating }}</b>{{ review.get_rating_display }}</span>
+            <h1>{{ review.title }}</h1>
+            <p class="mgl-byline">por {{ review.user.username }} em {{ review.created_at|date:"d/m/Y" }}</p>
+            <div class="mgl-prose mt-4">
+                {{ review.body|linebreaks }}
+            </div>
+        </article>
+
+        {% if request.user == review.user %}
+        <div class="d-flex gap-2 mt-4 pt-4 border-top">
+            <a href="{% url 'games:edit_review' review.game.pk review.pk %}" class="btn btn-outline-primary">
+                Editar
             </a>
+            <form
+                method="post"
+                action="{% url 'games:delete_review' review.game.pk review.pk %}"
+                data-confirmar="A review “{{ review.title }}” será apagada e não poderá ser recuperada."
+                data-confirmar-titulo="Excluir review?"
+                data-confirmar-botao="Excluir review"
+            >
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline-danger">Excluir</button>
+            </form>
         </div>
-
-        <div class="card">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-start mb-2">
-                    <h3 class="card-title">{{ review.title }}</h3>
-                    <span class="badge bg-primary fs-6">{{ review.get_rating_display }}</span>
-                </div>
-                <p class="text-muted">
-                    <small>por {{ review.user.username }} em {{ review.created_at|date:"d/m/Y" }}</small>
-                </p>
-                <hr>
-                <p class="card-text">{{ review.body }}</p>
-            </div>
-
-            {% if request.user == review.user %}
-            <div class="card-footer d-flex gap-2">
-                <a href="{% url 'games:edit_review' review.game.pk review.pk %}" class="btn btn-sm btn-outline-primary">
-                    Editar
-                </a>
-                <button
-                    type="button"
-                    class="btn btn-sm btn-outline-danger"
-                    data-bs-toggle="modal"
-                    data-bs-target="#modalExcluir"
-                >
-                    Excluir
-                </button>
-            </div>
-            {% endif %}
-        </div>
+        {% endif %}
     </div>
 </div>
-
-{% if request.user == review.user %}
-<div class="modal fade" id="modalExcluir" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Excluir review?</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                Tem certeza que quer excluir a review
-                <strong>{{ review.title }}</strong>?
-                Essa ação não pode ser desfeita.
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
-                    Cancelar
-                </button>
-                <form method="post" action="{% url 'games:delete_review' review.game.pk review.pk %}">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-danger">Sim, excluir</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-{% endif %}
 {% endblock %}

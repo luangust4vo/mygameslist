@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Configuração da IA — MyGamesList{% endblock %}
+
+{% block content %}
+<h1 class="mgl-page-title">Configuração da IA</h1>
+{% include "ia/_abas.html" with ativa="configuracao" %}
+
+<div class="row g-4">
+    <div class="col-lg-7">
+        <form method="post" class="mgl-panel">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <div class="d-flex gap-2 mt-3">
+                <button type="submit" class="btn btn-primary">Salvar</button>
+            </div>
+        </form>
+    </div>
+    <div class="col-lg-5">
+        <section class="mgl-panel" aria-labelledby="testar">
+            <h2 class="h4" id="testar">Testar conexão</h2>
+            <p class="mgl-empty">
+                Envia uma pergunta curta ao modelo configurado, usando a configuração salva.
+                A chamada fica registrada nas requisições e conta na sua cota.
+            </p>
+            <form method="post" action="{% url 'ia:testar_conexao' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline-primary">Testar conexão</button>
+            </form>
+        </section>
+    </div>
+</div>
+{% endblock %}

@@ -1,59 +1,102 @@
 {% extends 'base.html' %}
 {% load custom_filters %}
 
-{% block title %}{{ game.title }} — MyGameList{% endblock %}
+{% block title %}{{ game.title }} — MyGamesList{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-3">
-        {% if game.cover_url %}
-            <img src="{{ game.cover_url }}" class="img-fluid rounded" alt="{{ game.title }}">
-        {% endif %}
-        <a href="{% url 'games:reviews_list' game.pk %}" class="btn btn-outline-primary w-100 mt-3">
-            Ver reviews
-        </a>
+<div class="row g-4 g-lg-5">
+    <div class="col-md-5 col-lg-4">
+        <div class="jogo-lateral">
+            <div class="mgl-cover">
+                {% if game.cover_url %}
+                    <img src="{{ game.cover_url }}" alt="">
+                {% else %}
+                    <span class="mgl-cover-fallback" aria-hidden="true">{{ game.title }}</span>
+                {% endif %}
+                {% if user_list_item %}
+                    <span class="mgl-sticker status-{{ user_list_item.status }}">{{ user_list_item.get_status_display }}</span>
+                {% endif %}
+            </div>
 
-        {% if request.user.is_authenticated %}
-            {% if user_list_item %}
-                <a href="{% url 'games:edit_list_item' user_list_item.pk %}" class="btn btn-outline-primary w-100 mt-2">
-                    Na lista: {{ user_list_item.get_status_display }}
+            <div class="d-grid gap-2 mt-3">
+                {% if request.user.is_authenticated %}
+                    {% if user_list_item %}
+                        <a href="{% url 'games:edit_list_item' user_list_item.pk %}" class="btn btn-outline-primary">
+                            Mudar status
+                        </a>
+                    {% else %}
+                        <a href="{% url 'games:add_to_list' game.pk %}" class="btn btn-primary">
+                            Adicionar à lista
+                        </a>
+                    {% endif %}
+                {% endif %}
+                <a href="{% url 'games:reviews_list' game.pk %}" class="btn btn-outline-secondary">
+                    Ver reviews
                 </a>
-            {% else %}
-                <a href="{% url 'games:add_to_list' game.pk %}" class="btn btn-primary w-100 mt-2">
-                    Adicionar à lista
-                </a>
-            {% endif %}
-        {% endif %}
+            </div>
+        </div>
     </div>
-    <div class="col-md-9">
-        <h2>{{ game.title }}</h2>
-        <p class="text-muted">
-            Lançamento: {{ game.release_date|default:"Desconhecido" }}
-        </p>
-        <p>
-            Nota RAWG: {{ game.rawg_rating }}
-            {% if game.local_rating %}
-                — Nota MyGameList: {{ game.local_rating }}
+
+    <div class="col-md-7 col-lg-8">
+        <h1>{{ game.title }}</h1>
+
+        <dl class="mgl-game-facts">
+            <dt>Nota MyGamesList</dt>
+            <dd>
+                {% if game.local_rating %}
+                    <span class="mgl-score">{{ game.local_rating|floatformat:1 }}<span class="mgl-score-scale">de 5</span></span>
+                {% else %}
+                    <span class="mgl-empty">Sem reviews ainda</span>
+                {% endif %}
+            </dd>
+            <dt>Nota RAWG</dt>
+            <dd>{{ game.rawg_rating|floatformat:1 }} de 5</dd>
+            <dt>Lançamento</dt>
+            <dd>{{ game.release_date|date:"d/m/Y"|default:"Desconhecido" }}</dd>
+            {% if game.genres.all %}
+                <dt>Gêneros</dt>
+                <dd>
+                    {% for genero in game.genres.all %}<span class="mgl-tag">{{ genero|genero_pt }}</span>{% endfor %}
+                </dd>
             {% endif %}
-        </p>
-        {% if game.genres.all %}
-            <p>
-                Gêneros:
-                {% for genero in game.genres.all %}
-                    <span class="badge bg-secondary">{{ genero }}</span>
-                {% endfor %}
-            </p>
+            {% if game.platforms.all %}
+                <dt>Plataformas</dt>
+                <dd>
+                    {% for plataforma in game.platforms.all %}<span class="mgl-tag">{{ plataforma }}</span>{% endfor %}
+                </dd>
+            {% endif %}
+        </dl>
+
+        {% if game.description_pt %}
+            {% if game.description_pt_source == "ia" %}
+                <p class="text-muted small fst-italic">Descrição traduzida por IA a partir do original em inglês</p>
+            {% endif %}
+            <div class="descricao-jogo" tabindex="0" role="region" aria-label="Descrição do jogo">
+                {{ game.description_pt|descricao }}
+            </div>
+        {% elif game.description %}
+            <p class="text-muted small fst-italic">Descrição original em inglês</p>
+            <div class="descricao-jogo" lang="en" tabindex="0" role="region" aria-label="Descrição do jogo">
+                {{ game.description|descricao }}
+            </div>
         {% endif %}
-        {% if game.platforms.all %}
-            <p>
-                Plataformas:
-                {% for plataforma in game.platforms.all %}
-                    <span class="badge bg-dark">{{ plataforma }}</span>
-                {% endfor %}
-            </p>
+
+        {% if request.user|has_group:"Moderador" and game.pode_retraduzir %}
+            <form
+                method="post"
+                action="{% url 'games:retraduzir_descricao' game.pk %}"
+                class="mt-3"
+                data-confirmar="{% if game.description_pt %}A tradução atual será substituída por uma nova tradução da IA.{% else %}A descrição original será traduzida pela IA.{% endif %} A chamada conta na sua cota de IA."
+                data-confirmar-titulo="{% if game.description_pt %}Traduzir de novo?{% else %}Traduzir com IA?{% endif %}"
+                data-confirmar-botao="Traduzir"
+                data-confirmar-classe="btn-primary"
+            >
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm btn-outline-secondary">
+                    {% if game.description_pt %}Pedir nova tradução{% else %}Traduzir com IA{% endif %}
+                </button>
+            </form>
         {% endif %}
-        <hr>
-        <p>{{ game.description|render_markdown }}</p>
     </div>
 </div>
 {% endblock %}
