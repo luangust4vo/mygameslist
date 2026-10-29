@@ -5,6 +5,46 @@ Site no estilo do MyAnimeList para jogos: cada jogador monta a própria lista co
 - Proposta, escopo e regras de negócio: [`docs/proposta.md`](docs/proposta.md)
 - Instruções para agentes de IA e convenções do código: [`AGENTS.md`](AGENTS.md)
 
+Em produção: <https://mygameslist-497823.rj.r.appspot.com>
+
+## Requisitos da disciplina
+
+Onde cada item do plano de atividades está no código e como vê-lo funcionando no site.
+
+### Definição do projeto
+
+| Requisito | Onde está | Como ver no site |
+|---|---|---|
+| Pelo menos seis classes no models (sem contar `User`) | `games/models.py`: `Genre`, `Platform`, `Game`, `UserGameList`, `Review`, `Activity`; `ia/models.py`: `ConfiguracaoIA`, `CotaUsuario`, `RequisicaoIA`, `MensagemAssistente` | `/admin/` |
+| Telas de inserir, alterar, excluir e listar | `UserGameList`: `AddToListView`, `EditListItemView`, `RemoveFromListView`, `MyGameListView`; `Review`: `ReviewCreateView`, `ReviewUpdateView`, `ReviewDeleteView`, `ReviewListView`, `ReviewDetailView`; `MensagemAssistente`: `PerguntarView`, `AssistenteView`, `LimparConversaView`; `ConfiguracaoIA` e `CotaUsuario`: `ConfiguracaoUpdateView`, `CotaUsuarioUpdateView`. `Game`, `Genre` e `Platform` são criados pela importação do RAWG e não são editados pelo usuário, por regra de negócio | Minha Lista, página do jogo → Ver reviews, Assistente |
+| Um movimento (além do CRUD) | Importação do RAWG com descrição da Steam ou tradução pela IA (`games/services.py`); nota local recalculada a cada review (`Game.update_local_rating`); feed de atividades; assistente com cota e auditoria (`ia/servicos.py`, `ia/assistente.py`) | Buscar → importar um jogo; Início → Atividade recente |
+| Layout com framework front-end | Bootstrap 5 com tema próprio em `static/css/global.css` e `games/templates/games/base.html` | Todas as telas |
+| Controle de acesso com autenticação | `LoginRequiredMixin` nas telas do usuário; login, logout, cadastro e troca de senha em `games/urls.py` | Minha Lista sem login redireciona para Entrar |
+| Controle de acesso por grupo em mais de uma view | Grupo Moderador (`GroupRequiredMixin` em `games/mixins.py`): `ModerationPanelView`, `RetraduzirDescricaoView`, exclusão de qualquer review e as telas de IA (`ia/views.py`, `ModeradorMixin`) | Menu Moderação (só para o grupo) |
+| Plugins front-end (jQuery) | Select2 e Bootbox em `static/js/mgl.js`; `$.ajax` em `static/js/assistente.js` | Filtros da Minha Lista; botão Remover; Assistente |
+| Controle de versões com Git | Repositório no GitHub, Conventional Commits, branches com pull request | — |
+
+### 3º trimestre — 1ª parte
+
+| Requisito | Onde está | Como ver no site |
+|---|---|---|
+| 1. Debug Toolbar e consultas otimizadas | `debug_toolbar` em `core/settings.py` com `DEBUG=True`; `select_related` em `MyGameListView`, `ModerationPanelView`, `ReviewListView`, `RequisicaoListView` e no feed; `prefetch_related("genres")` em "Jogos em destaque" (`HomeView`) | Rodando localmente, painel SQL em qualquer tela |
+| 2. Django Filter em duas ListViews, com paginação por templatetag própria que preserva a busca | `games/filters.py` (Minha Lista e painel de moderação) e `ia/filters.py` (requisições de IA); templatetag `url_pagina` em `games/templatetags/custom_filters.py`, usada por `comum/_paginacao.html` | Minha Lista → filtrar → página 2 |
+| 3. Registros do próprio usuário em duas classes | `UserGameList` (listar, alterar e excluir só os seus) e `MensagemAssistente` (listar, criar e apagar só os seus); `Review` só pode ser alterada ou excluída pelo autor | Minha Lista; Assistente |
+| 4. Mensagens em cadastro, alteração e exclusão | `messages.success`/`error`/`info` em todas as views de criar, alterar e excluir | Alertas no topo da página |
+| 5. Dois plugins jQuery | Select2 (busca nos campos de gênero e plataforma) e Bootbox (confirmação de remover da lista, excluir review, nova tradução e limpar conversa) | Minha Lista |
+| 6. Deploy no Google App Engine | `app.yaml`, `.gcloudignore`, segredos no Secret Manager (veja [Deploy](#deploy-no-google-app-engine)) | <https://mygameslist-497823.rj.r.appspot.com> |
+
+### 3º trimestre — 2ª parte
+
+| Requisito | Onde está | Como ver no site |
+|---|---|---|
+| 1. `AGENTS.md` e pelo menos três skills, uma para commits | `AGENTS.md`; `.claude/skills/commit-padrao`, `nova-tela-django` e `testes-django` | — |
+| 2. App `ia` como única porta de entrada, com configuração, auditoria, cota mensal e as quatro telas | `ia/servicos.py` (`chamar_ia`); `ia/models.py`; telas de requisições, configuração com "Testar conexão", IA por usuário e meu consumo em `ia/views.py` | Moderação → Requisições de IA, Configuração da IA, IA por usuário; Meu consumo de IA |
+| 3. Assistente com `chamar_ia`, `contexto_projeto.md`, limites, histórico por usuário, janela de 5 mensagens, AJAX com CSRF e Markdown sanitizado | `ia/assistente.py`, `ia/contexto_projeto.md`, `PerguntarView`, `static/js/assistente.js`, `markdown_seguro` em `games/sanitize.py` | Assistente |
+| 4. Auditoria do código no TestAI | Texto do repositório gerado pelo gitingest a partir da `main` | — |
+| 5. Sistema funcional, com interface amigável e navegação coerente | 137 testes automatizados (`games/tests.py`, `ia/tests.py`) e o site publicado | Todas as telas |
+
 ## Tecnologias
 
 - Python 3.12, Django 5.2, django-filter, Crispy Forms (Bootstrap 5), nh3 e Markdown
