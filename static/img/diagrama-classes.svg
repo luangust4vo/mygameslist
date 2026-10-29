@@ -1,0 +1,145 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1300 928" width="1300" height="928" role="img" aria-label="Diagrama de classes do MyGamesList">
+<title>Diagrama de classes do MyGamesList</title>
+<rect width="1300" height="928" fill="#ffffff"/>
+<line x1="360.0" y1="146.1" x2="240.0" y2="109.5" stroke="#46527a" stroke-width="1.6"/>
+<text x="347.6" y="135.9" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle" fill="#46527a">*</text>
+<text x="252.4" y="127.7" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle" fill="#46527a">*</text>
+<line x1="360.0" y1="184.4" x2="240.0" y2="192.3" stroke="#46527a" stroke-width="1.6"/>
+<text x="343.4" y="179.4" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle" fill="#46527a">*</text>
+<text x="256.6" y="205.3" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle" fill="#46527a">*</text>
+<line x1="720.0" y1="124.9" x2="566.0" y2="156.4" stroke="#46527a" stroke-width="1.6"/>
+<text x="702.3" y="122.4" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle" fill="#46527a">*</text>
+<text x="583.7" y="167.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle" fill="#46527a">1</text>
+<line x1="753.9" y1="169.0" x2="517.4" y2="400.0" stroke="#46527a" stroke-width="1.6"/>
+<text x="735.5" y="177.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle" fill="#46527a">*</text>
+<text x="535.8" y="400.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle" fill="#46527a">1</text>
+<line x1="245.2" y1="400.0" x2="360.0" y2="282.7" stroke="#46527a" stroke-width="1.6"/>
+<text x="263.5" y="399.6" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle" fill="#46527a">*</text>
+<text x="341.7" y="291.2" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle" fill="#46527a">1</text>
+<line x1="281.0" y1="474.2" x2="360.0" y2="466.2" stroke="#46527a" stroke-width="1.6"/>
+<text x="297.9" y="486.6" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle" fill="#46527a">*</text>
+<text x="343.1" y="461.9" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle" fill="#46527a">1</text>
+<line x1="739.8" y1="400.0" x2="566.0" y2="260.3" stroke="#46527a" stroke-width="1.6"/>
+<text x="733.6" y="386.2" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle" fill="#46527a">*</text>
+<text x="572.2" y="282.1" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle" fill="#46527a">1</text>
+<line x1="720.0" y1="462.1" x2="560.0" y2="458.4" stroke="#46527a" stroke-width="1.6"/>
+<text x="704.2" y="455.8" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle" fill="#46527a">*</text>
+<text x="575.8" y="472.7" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle" fill="#46527a">1</text>
+<line x1="196.0" y1="640.0" x2="379.6" y2="512.0" stroke="#46527a" stroke-width="1.6"/>
+<text x="214.8" y="643.1" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle" fill="#46527a">0..1</text>
+<text x="360.8" y="516.9" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle" fill="#46527a">1</text>
+<line x1="460.0" y1="640.0" x2="460.0" y2="512.0" stroke="#46527a" stroke-width="1.6"/>
+<text x="470.0" y="628.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle" fill="#46527a">*</text>
+<text x="450.0" y="532.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle" fill="#46527a">0..1</text>
+<line x1="736.0" y1="640.0" x2="544.0" y2="512.0" stroke="#46527a" stroke-width="1.6"/>
+<text x="728.2" y="626.8" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle" fill="#46527a">*</text>
+<text x="551.8" y="533.2" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle" fill="#46527a">1</text>
+<rect x="360" y="400" width="200" height="112" rx="6" fill="#f7f8fc" stroke="#141a2e" stroke-width="1.5"/>
+<path d="M360 430 V406 Q360 400 366 400 H554 Q560 400 560 406 V430 Z" fill="#d7dee8" stroke="#141a2e" stroke-width="1.5"/>
+<text x="460.0" y="420.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle" fill="#141a2e">User</text>
+<text x="372.0" y="448.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">username: str</text>
+<text x="372.0" y="465.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">email: str</text>
+<text x="372.0" y="482.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">password: str</text>
+<text x="372.0" y="499.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">groups: Group[*]</text>
+<rect x="40" y="40" width="200" height="78" rx="6" fill="#f7f8fc" stroke="#141a2e" stroke-width="1.5"/>
+<path d="M40 70 V46 Q40 40 46 40 H234 Q240 40 240 46 V70 Z" fill="#ffd23f" stroke="#141a2e" stroke-width="1.5"/>
+<text x="140.0" y="60.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle" fill="#141a2e">Genre</text>
+<text x="52.0" y="88.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">rawg_id: int</text>
+<text x="52.0" y="105.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">name: str</text>
+<rect x="40" y="160" width="200" height="78" rx="6" fill="#f7f8fc" stroke="#141a2e" stroke-width="1.5"/>
+<path d="M40 190 V166 Q40 160 46 160 H234 Q240 160 240 166 V190 Z" fill="#ffd23f" stroke="#141a2e" stroke-width="1.5"/>
+<text x="140.0" y="180.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle" fill="#141a2e">Platform</text>
+<text x="52.0" y="208.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">rawg_id: int</text>
+<text x="52.0" y="225.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">name: str</text>
+<rect x="360" y="40" width="206" height="275" rx="6" fill="#f7f8fc" stroke="#141a2e" stroke-width="1.5"/>
+<path d="M360 70 V46 Q360 40 366 40 H560 Q566 40 566 46 V70 Z" fill="#ffd23f" stroke="#141a2e" stroke-width="1.5"/>
+<text x="463.0" y="60.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle" fill="#141a2e">Game</text>
+<text x="372.0" y="88.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">rawg_id: int</text>
+<text x="372.0" y="105.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">title: str</text>
+<text x="372.0" y="122.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">description: str</text>
+<text x="372.0" y="139.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">description_pt: str</text>
+<text x="372.0" y="156.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">description_pt_source: str</text>
+<text x="372.0" y="173.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">cover_url: url</text>
+<text x="372.0" y="190.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">release_date: date</text>
+<text x="372.0" y="207.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">rawg_rating: float</text>
+<text x="372.0" y="224.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">local_rating: float</text>
+<text x="372.0" y="241.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">genres: Genre[*]</text>
+<text x="372.0" y="258.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">platforms: Platform[*]</text>
+<line x1="360" y1="265" x2="566" y2="265" stroke="#141a2e" stroke-width="1"/>
+<text x="372.0" y="283.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e" font-style="italic">+ update_local_rating()</text>
+<text x="372.0" y="300.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e" font-style="italic">+ pode_retraduzir: bool</text>
+<rect x="720" y="400" width="200" height="129" rx="6" fill="#f7f8fc" stroke="#141a2e" stroke-width="1.5"/>
+<path d="M720 430 V406 Q720 400 726 400 H914 Q920 400 920 406 V430 Z" fill="#ffd23f" stroke="#141a2e" stroke-width="1.5"/>
+<text x="820.0" y="420.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle" fill="#141a2e">UserGameList</text>
+<text x="732.0" y="448.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">user: User</text>
+<text x="732.0" y="465.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">game: Game</text>
+<text x="732.0" y="482.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">status: str</text>
+<text x="732.0" y="499.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">date_added: date</text>
+<text x="732.0" y="516.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">date_updated: date</text>
+<rect x="40" y="400" width="241" height="173" rx="6" fill="#f7f8fc" stroke="#141a2e" stroke-width="1.5"/>
+<path d="M40 430 V406 Q40 400 46 400 H275 Q281 400 281 406 V430 Z" fill="#ffd23f" stroke="#141a2e" stroke-width="1.5"/>
+<text x="160.5" y="420.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle" fill="#141a2e">Review</text>
+<text x="52.0" y="448.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">user: User</text>
+<text x="52.0" y="465.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">game: Game</text>
+<text x="52.0" y="482.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">rating: int</text>
+<text x="52.0" y="499.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">title: str</text>
+<text x="52.0" y="516.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">body: str</text>
+<text x="52.0" y="533.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">created_at: datetime</text>
+<line x1="40" y1="540" x2="281" y2="540" stroke="#141a2e" stroke-width="1"/>
+<text x="52.0" y="558.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e" font-style="italic">+ save() recalcula a nota do jogo</text>
+<rect x="720" y="40" width="200" height="129" rx="6" fill="#f7f8fc" stroke="#141a2e" stroke-width="1.5"/>
+<path d="M720 70 V46 Q720 40 726 40 H914 Q920 40 920 46 V70 Z" fill="#ffd23f" stroke="#141a2e" stroke-width="1.5"/>
+<text x="820.0" y="60.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle" fill="#141a2e">Activity</text>
+<text x="732.0" y="88.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">user: User</text>
+<text x="732.0" y="105.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">game: Game</text>
+<text x="732.0" y="122.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">action: str</text>
+<text x="732.0" y="139.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">detail: str</text>
+<text x="732.0" y="156.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">created_at: datetime</text>
+<rect x="1040" y="640" width="200" height="173" rx="6" fill="#f7f8fc" stroke="#141a2e" stroke-width="1.5"/>
+<path d="M1040 670 V646 Q1040 640 1046 640 H1234 Q1240 640 1240 646 V670 Z" fill="#2ec4b6" stroke="#141a2e" stroke-width="1.5"/>
+<text x="1140.0" y="660.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle" fill="#141a2e">ConfiguracaoIA</text>
+<text x="1052.0" y="688.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">modelo: str</text>
+<text x="1052.0" y="705.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">temperatura: float</text>
+<text x="1052.0" y="722.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">max_tokens: int</text>
+<text x="1052.0" y="739.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">cota_mensal_padrao: int</text>
+<text x="1052.0" y="756.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">ativa: bool</text>
+<text x="1052.0" y="773.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">atualizada_em: datetime</text>
+<line x1="1040" y1="780" x2="1240" y2="780" stroke="#141a2e" stroke-width="1"/>
+<text x="1052.0" y="798.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e" font-style="italic">+ atual(): ConfiguracaoIA</text>
+<rect x="40" y="640" width="200" height="78" rx="6" fill="#f7f8fc" stroke="#141a2e" stroke-width="1.5"/>
+<path d="M40 670 V646 Q40 640 46 640 H234 Q240 640 240 646 V670 Z" fill="#2ec4b6" stroke="#141a2e" stroke-width="1.5"/>
+<text x="140.0" y="660.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle" fill="#141a2e">CotaUsuario</text>
+<text x="52.0" y="688.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">user: User</text>
+<text x="52.0" y="705.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">limite_mensal: int</text>
+<rect x="720" y="640" width="200" height="112" rx="6" fill="#f7f8fc" stroke="#141a2e" stroke-width="1.5"/>
+<path d="M720 670 V646 Q720 640 726 640 H914 Q920 640 920 646 V670 Z" fill="#2ec4b6" stroke="#141a2e" stroke-width="1.5"/>
+<text x="820.0" y="660.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle" fill="#141a2e">MensagemAssistente</text>
+<text x="732.0" y="688.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">user: User</text>
+<text x="732.0" y="705.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">papel: str</text>
+<text x="732.0" y="722.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">texto: str</text>
+<text x="732.0" y="739.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">criada_em: datetime</text>
+<rect x="360" y="640" width="200" height="248" rx="6" fill="#f7f8fc" stroke="#141a2e" stroke-width="1.5"/>
+<path d="M360 670 V646 Q360 640 366 640 H554 Q560 640 560 646 V670 Z" fill="#2ec4b6" stroke="#141a2e" stroke-width="1.5"/>
+<text x="460.0" y="660.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle" fill="#141a2e">RequisicaoIA</text>
+<text x="372.0" y="688.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">user: User</text>
+<text x="372.0" y="705.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">finalidade: str</text>
+<text x="372.0" y="722.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">status: str</text>
+<text x="372.0" y="739.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">modelo: str</text>
+<text x="372.0" y="756.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">entrada: str</text>
+<text x="372.0" y="773.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">saida: str</text>
+<text x="372.0" y="790.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">erro: str</text>
+<text x="372.0" y="807.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">tokens_entrada: int</text>
+<text x="372.0" y="824.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">tokens_saida: int</text>
+<text x="372.0" y="841.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">tokens_total: int</text>
+<text x="372.0" y="858.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">duracao_ms: int</text>
+<text x="372.0" y="875.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">criada_em: datetime</text>
+<text x="1040.0" y="54.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="14" font-weight="700" text-anchor="start" fill="#141a2e">Legenda</text>
+<rect x="1040" y="72" width="22" height="16" rx="3" fill="#ffd23f" stroke="#141a2e" stroke-width="1.2"/>
+<text x="1072.0" y="85.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">app games</text>
+<rect x="1040" y="98" width="22" height="16" rx="3" fill="#2ec4b6" stroke="#141a2e" stroke-width="1.2"/>
+<text x="1072.0" y="111.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">app ia</text>
+<rect x="1040" y="124" width="22" height="16" rx="3" fill="#d7dee8" stroke="#141a2e" stroke-width="1.2"/>
+<text x="1072.0" y="137.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#141a2e">Django (auth)</text>
+<text x="1040.0" y="172.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#46527a">* = muitos, 1 = um,</text>
+<text x="1040.0" y="190.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#46527a">0..1 = nenhum ou um</text>
+</svg>

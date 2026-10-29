@@ -32,6 +32,9 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'games:search' %}"{% if url_name == "search" %} aria-current="page"{% endif %}>Buscar</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'games:sobre' %}"{% if url_name == "sobre" %} aria-current="page"{% endif %}>Sobre</a>
+                    </li>
                     {% if request.user.is_authenticated %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'games:my_list' %}"{% if url_name == "my_list" or url_name == "add_to_list" or url_name == "edit_list_item" or url_name == "remove_from_list" %} aria-current="page"{% endif %}>Minha Lista</a>
@@ -100,6 +103,7 @@
             <nav class="d-flex gap-3" aria-label="Rodapé">
                 <a href="{% url 'games:home' %}">Início</a>
                 <a href="{% url 'games:search' %}">Buscar</a>
+                <a href="{% url 'games:sobre' %}">Sobre</a>
                 {% if request.user.is_authenticated %}
                     <a href="{% url 'games:my_list' %}">Minha Lista</a>
                 {% endif %}

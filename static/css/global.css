@@ -964,6 +964,47 @@ a {
     margin-top: 0.5rem;
 }
 
+/* ---------- Sobre ---------- */
+
+.sobre-atores dt {
+    color: var(--mgl-accent);
+}
+
+.sobre-atores dd {
+    margin-bottom: 0.75rem;
+    color: var(--mgl-text);
+}
+
+.sobre-tecnologias {
+    padding-left: 1.25rem;
+    line-height: 1.8;
+}
+
+.sobre-diagrama {
+    margin-bottom: var(--mgl-section);
+}
+
+.sobre-diagrama-imagem {
+    display: block;
+    overflow-x: auto;
+    padding: 0.75rem;
+    background: #ffffff;
+    border-radius: var(--mgl-radius-panel);
+}
+
+.sobre-diagrama-imagem img {
+    display: block;
+    width: 100%;
+    min-width: 720px;
+    height: auto;
+}
+
+.sobre-diagrama figcaption {
+    margin-top: 0.5rem;
+    color: var(--mgl-muted);
+    font-size: var(--mgl-size-xs);
+}
+
 .mgl-review {
     border-bottom: 1px solid var(--mgl-line);
     padding-block: 1.25rem;

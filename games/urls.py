@@ -7,6 +7,7 @@ app_name = "games"
 
 urlpatterns = [
     path("", views.HomeView.as_view(), name="home"),
+    path("sobre/", views.SobreView.as_view(), name="sobre"),
     path("auth/login/", views.CustomLoginView.as_view(), name="login"),
     path("auth/logout/", views.CustomLogoutView.as_view(), name="logout"),
     path("auth/register/", views.RegisterView.as_view(), name="register"),

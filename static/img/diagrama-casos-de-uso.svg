@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 1256" width="1100" height="1256" role="img" aria-label="Diagrama de casos de uso do MyGamesList">
+<title>Diagrama de casos de uso do MyGamesList</title>
+<rect width="1100" height="1256" fill="#ffffff"/>
+<rect x="270" y="40" width="520" height="1126" rx="10" fill="#f7f8fc" stroke="#141a2e" stroke-width="1.8"/>
+<text x="530.0" y="68.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="16" font-weight="700" text-anchor="middle" fill="#141a2e">MyGamesList</text>
+<line x1="286" y1="393" x2="774" y2="393" stroke="#46527a" stroke-width="1" stroke-dasharray="5 5"/>
+<line x1="286" y1="791" x2="774" y2="791" stroke="#46527a" stroke-width="1" stroke-dasharray="5 5"/>
+<line x1="134" y1="212.0" x2="315.0" y2="90" stroke="#46527a" stroke-width="1.3"/>
+<line x1="134" y1="212.0" x2="315.0" y2="142" stroke="#46527a" stroke-width="1.3"/>
+<line x1="134" y1="212.0" x2="315.0" y2="194" stroke="#46527a" stroke-width="1.3"/>
+<line x1="134" y1="212.0" x2="315.0" y2="246" stroke="#46527a" stroke-width="1.3"/>
+<line x1="134" y1="212.0" x2="315.0" y2="298" stroke="#46527a" stroke-width="1.3"/>
+<line x1="134" y1="212.0" x2="315.0" y2="350" stroke="#46527a" stroke-width="1.3"/>
+<line x1="134" y1="584.0" x2="315.0" y2="436" stroke="#46527a" stroke-width="1.3"/>
+<line x1="134" y1="584.0" x2="315.0" y2="488" stroke="#46527a" stroke-width="1.3"/>
+<line x1="134" y1="584.0" x2="315.0" y2="540" stroke="#46527a" stroke-width="1.3"/>
+<line x1="134" y1="584.0" x2="315.0" y2="592" stroke="#46527a" stroke-width="1.3"/>
+<line x1="134" y1="584.0" x2="315.0" y2="644" stroke="#46527a" stroke-width="1.3"/>
+<line x1="134" y1="584.0" x2="315.0" y2="696" stroke="#46527a" stroke-width="1.3"/>
+<line x1="134" y1="584.0" x2="315.0" y2="748" stroke="#46527a" stroke-width="1.3"/>
+<line x1="134" y1="956.0" x2="315.0" y2="834" stroke="#46527a" stroke-width="1.3"/>
+<line x1="134" y1="956.0" x2="315.0" y2="886" stroke="#46527a" stroke-width="1.3"/>
+<line x1="134" y1="956.0" x2="315.0" y2="938" stroke="#46527a" stroke-width="1.3"/>
+<line x1="134" y1="956.0" x2="315.0" y2="990" stroke="#46527a" stroke-width="1.3"/>
+<line x1="134" y1="956.0" x2="315.0" y2="1042" stroke="#46527a" stroke-width="1.3"/>
+<line x1="134" y1="956.0" x2="315.0" y2="1094" stroke="#46527a" stroke-width="1.3"/>
+<line x1="745.0" y1="142" x2="910" y2="289.0" stroke="#46527a" stroke-width="1.3" stroke-dasharray="6 4"/>
+<line x1="745.0" y1="436" x2="910" y2="289.0" stroke="#46527a" stroke-width="1.3" stroke-dasharray="6 4"/>
+<line x1="745.0" y1="436" x2="910" y2="436.0" stroke="#46527a" stroke-width="1.3" stroke-dasharray="6 4"/>
+<line x1="745.0" y1="436" x2="910" y2="765.0" stroke="#46527a" stroke-width="1.3" stroke-dasharray="6 4"/>
+<line x1="745.0" y1="644" x2="910" y2="765.0" stroke="#46527a" stroke-width="1.3" stroke-dasharray="6 4"/>
+<line x1="745.0" y1="938" x2="910" y2="765.0" stroke="#46527a" stroke-width="1.3" stroke-dasharray="6 4"/>
+<line x1="745.0" y1="1042" x2="910" y2="765.0" stroke="#46527a" stroke-width="1.3" stroke-dasharray="6 4"/>
+<ellipse cx="530.0" cy="90" rx="215" ry="21" fill="#fff6cf" stroke="#141a2e" stroke-width="1.5"/>
+<text x="530.0" y="94.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" text-anchor="middle" fill="#141a2e">Ver a página inicial e os destaques</text>
+<ellipse cx="530.0" cy="142" rx="215" ry="21" fill="#fff6cf" stroke="#141a2e" stroke-width="1.5"/>
+<text x="530.0" y="146.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" text-anchor="middle" fill="#141a2e">Buscar jogos</text>
+<ellipse cx="530.0" cy="194" rx="215" ry="21" fill="#fff6cf" stroke="#141a2e" stroke-width="1.5"/>
+<text x="530.0" y="198.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" text-anchor="middle" fill="#141a2e">Ver a página do jogo</text>
+<ellipse cx="530.0" cy="246" rx="215" ry="21" fill="#fff6cf" stroke="#141a2e" stroke-width="1.5"/>
+<text x="530.0" y="250.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" text-anchor="middle" fill="#141a2e">Ler reviews</text>
+<ellipse cx="530.0" cy="298" rx="215" ry="21" fill="#fff6cf" stroke="#141a2e" stroke-width="1.5"/>
+<text x="530.0" y="302.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" text-anchor="middle" fill="#141a2e">Cadastrar-se</text>
+<ellipse cx="530.0" cy="350" rx="215" ry="21" fill="#fff6cf" stroke="#141a2e" stroke-width="1.5"/>
+<text x="530.0" y="354.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" text-anchor="middle" fill="#141a2e">Entrar no site</text>
+<ellipse cx="530.0" cy="436" rx="215" ry="21" fill="#fff6cf" stroke="#141a2e" stroke-width="1.5"/>
+<text x="530.0" y="440.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" text-anchor="middle" fill="#141a2e">Importar jogo do RAWG</text>
+<ellipse cx="530.0" cy="488" rx="215" ry="21" fill="#fff6cf" stroke="#141a2e" stroke-width="1.5"/>
+<text x="530.0" y="492.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" text-anchor="middle" fill="#141a2e">Adicionar, mudar status e remover da lista</text>
+<ellipse cx="530.0" cy="540" rx="215" ry="21" fill="#fff6cf" stroke="#141a2e" stroke-width="1.5"/>
+<text x="530.0" y="544.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" text-anchor="middle" fill="#141a2e">Filtrar a minha lista</text>
+<ellipse cx="530.0" cy="592" rx="215" ry="21" fill="#fff6cf" stroke="#141a2e" stroke-width="1.5"/>
+<text x="530.0" y="596.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" text-anchor="middle" fill="#141a2e">Escrever, editar e excluir review</text>
+<ellipse cx="530.0" cy="644" rx="215" ry="21" fill="#fff6cf" stroke="#141a2e" stroke-width="1.5"/>
+<text x="530.0" y="648.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" text-anchor="middle" fill="#141a2e">Conversar com o assistente</text>
+<ellipse cx="530.0" cy="696" rx="215" ry="21" fill="#fff6cf" stroke="#141a2e" stroke-width="1.5"/>
+<text x="530.0" y="700.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" text-anchor="middle" fill="#141a2e">Ver meu consumo de IA</text>
+<ellipse cx="530.0" cy="748" rx="215" ry="21" fill="#fff6cf" stroke="#141a2e" stroke-width="1.5"/>
+<text x="530.0" y="752.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" text-anchor="middle" fill="#141a2e">Trocar a senha</text>
+<ellipse cx="530.0" cy="834" rx="215" ry="21" fill="#fff6cf" stroke="#141a2e" stroke-width="1.5"/>
+<text x="530.0" y="838.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" text-anchor="middle" fill="#141a2e">Excluir qualquer review</text>
+<ellipse cx="530.0" cy="886" rx="215" ry="21" fill="#fff6cf" stroke="#141a2e" stroke-width="1.5"/>
+<text x="530.0" y="890.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" text-anchor="middle" fill="#141a2e">Filtrar reviews no painel</text>
+<ellipse cx="530.0" cy="938" rx="215" ry="21" fill="#fff6cf" stroke="#141a2e" stroke-width="1.5"/>
+<text x="530.0" y="942.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" text-anchor="middle" fill="#141a2e">Pedir nova tradução da descrição</text>
+<ellipse cx="530.0" cy="990" rx="215" ry="21" fill="#fff6cf" stroke="#141a2e" stroke-width="1.5"/>
+<text x="530.0" y="994.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" text-anchor="middle" fill="#141a2e">Ver as requisições de IA</text>
+<ellipse cx="530.0" cy="1042" rx="215" ry="21" fill="#fff6cf" stroke="#141a2e" stroke-width="1.5"/>
+<text x="530.0" y="1046.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" text-anchor="middle" fill="#141a2e">Configurar a IA e testar a conexão</text>
+<ellipse cx="530.0" cy="1094" rx="215" ry="21" fill="#fff6cf" stroke="#141a2e" stroke-width="1.5"/>
+<text x="530.0" y="1098.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="13" font-weight="500" text-anchor="middle" fill="#141a2e">Ajustar a cota de IA por usuário</text>
+<circle cx="110" cy="192.0" r="11" fill="#ffffff" stroke="#141a2e" stroke-width="2"/>
+<line x1="110" y1="203.0" x2="110" y2="230.0" stroke="#141a2e" stroke-width="2"/>
+<line x1="92" y1="212.0" x2="128" y2="212.0" stroke="#141a2e" stroke-width="2"/>
+<line x1="110" y1="230.0" x2="96" y2="250.0" stroke="#141a2e" stroke-width="2"/>
+<line x1="110" y1="230.0" x2="124" y2="250.0" stroke="#141a2e" stroke-width="2"/>
+<text x="110.0" y="270.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle" fill="#141a2e">Visitante</text>
+<circle cx="110" cy="564.0" r="11" fill="#ffffff" stroke="#141a2e" stroke-width="2"/>
+<line x1="110" y1="575.0" x2="110" y2="602.0" stroke="#141a2e" stroke-width="2"/>
+<line x1="92" y1="584.0" x2="128" y2="584.0" stroke="#141a2e" stroke-width="2"/>
+<line x1="110" y1="602.0" x2="96" y2="622.0" stroke="#141a2e" stroke-width="2"/>
+<line x1="110" y1="602.0" x2="124" y2="622.0" stroke="#141a2e" stroke-width="2"/>
+<text x="110.0" y="642.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle" fill="#141a2e">Jogador</text>
+<circle cx="110" cy="936.0" r="11" fill="#ffffff" stroke="#141a2e" stroke-width="2"/>
+<line x1="110" y1="947.0" x2="110" y2="974.0" stroke="#141a2e" stroke-width="2"/>
+<line x1="92" y1="956.0" x2="128" y2="956.0" stroke="#141a2e" stroke-width="2"/>
+<line x1="110" y1="974.0" x2="96" y2="994.0" stroke="#141a2e" stroke-width="2"/>
+<line x1="110" y1="974.0" x2="124" y2="994.0" stroke="#141a2e" stroke-width="2"/>
+<text x="110.0" y="1014.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle" fill="#141a2e">Moderador</text>
+<line x1="110" y1="552.0" x2="110" y2="316.0" stroke="#141a2e" stroke-width="1.6"/>
+<polygon points="110,302.0 101,316.0 119,316.0" fill="#ffffff" stroke="#141a2e" stroke-width="1.6"/>
+<line x1="110" y1="924.0" x2="110" y2="688.0" stroke="#141a2e" stroke-width="1.6"/>
+<polygon points="110,674.0 101,688.0 119,688.0" fill="#ffffff" stroke="#141a2e" stroke-width="1.6"/>
+<rect x="910" y="263.0" width="150" height="52" rx="6" fill="#2ec4b6" fill-opacity="0.25" stroke="#141a2e" stroke-width="1.5"/>
+<text x="985.0" y="283.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="11" font-weight="400" text-anchor="middle" fill="#46527a">«sistema externo»</text>
+<text x="985.0" y="302.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle" fill="#141a2e">RAWG</text>
+<rect x="910" y="410.0" width="150" height="52" rx="6" fill="#2ec4b6" fill-opacity="0.25" stroke="#141a2e" stroke-width="1.5"/>
+<text x="985.0" y="430.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="11" font-weight="400" text-anchor="middle" fill="#46527a">«sistema externo»</text>
+<text x="985.0" y="449.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle" fill="#141a2e">Steam</text>
+<rect x="910" y="739.0" width="150" height="52" rx="6" fill="#2ec4b6" fill-opacity="0.25" stroke="#141a2e" stroke-width="1.5"/>
+<text x="985.0" y="759.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="11" font-weight="400" text-anchor="middle" fill="#46527a">«sistema externo»</text>
+<text x="985.0" y="778.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle" fill="#141a2e">Gemini</text>
+<text x="40.0" y="1232.0" font-family="Archivo, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#46527a">Jogador herda os casos do Visitante e Moderador herda os do Jogador. Linhas tracejadas: serviços externos usados pelo caso.</text>
+</svg>

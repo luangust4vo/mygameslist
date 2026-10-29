@@ -925,3 +925,24 @@ class ReviewListaPaginacaoTests(TestCase):
 
         self.assertContains(response, 'href="?page=2"')
         self.assertContains(response, "1 de 2")
+
+
+class PaginaSobreTests(TestCase):
+    def test_visitante_ve_a_descricao_e_os_dois_diagramas(self):
+        response = self.client.get(reverse("games:sobre"))
+
+        self.assertContains(response, "Sobre o MyGamesList")
+        self.assertContains(response, "img/diagrama-casos-de-uso.svg")
+        self.assertContains(response, "img/diagrama-classes.svg")
+        self.assertContains(response, 'alt="Diagrama de casos de uso:', count=1)
+
+    def test_atores_e_tecnologias_vem_do_extra_context(self):
+        response = self.client.get(reverse("games:sobre"))
+
+        self.assertEqual([nome for nome, _ in response.context["atores"]], ["Visitante", "Jogador", "Moderador"])
+        self.assertIn("Python 3.12 e Django 5.2", response.context["tecnologias"])
+
+    def test_menu_tem_link_para_a_pagina_sobre(self):
+        response = self.client.get(reverse("games:home"))
+
+        self.assertContains(response, f'href="{reverse("games:sobre")}"')

@@ -24,6 +24,16 @@ Onde cada item do plano de atividades está no código e como vê-lo funcionando
 | Plugins front-end (jQuery) | Select2 e Bootbox em `static/js/mgl.js`; `$.ajax` em `static/js/assistente.js` | Filtros da Minha Lista; botão Remover; Assistente |
 | Controle de versões com Git | Repositório no GitHub, Conventional Commits, branches com pull request | — |
 
+### 1º trimestre
+
+| Requisito | Onde está | Como ver no site |
+|---|---|---|
+| Página "sobre" com a descrição do projeto, o diagrama de casos de uso e o diagrama de classes (imagens) | `SobreView` em `games/views.py`, `games/templates/games/sobre/sobre.html`, imagens em `static/img/`, geradas por `docs/diagramas/gerar_diagramas.py` | Menu Sobre (`/sobre/`) |
+| Template com framework front-end | Bootstrap 5 em `base.html` | Todas as telas |
+| Classes e atributos conforme o diagrama de classes | `games/models.py` e `ia/models.py`; o diagrama é gerado a partir deles | `/sobre/` |
+| Personalizar templates com `extra_context` ou `get_context_data` | `extra_context` em `SobreView`; `get_context_data` em `HomeView`, `MyGameListView`, `AssistenteView` e outras | Sobre; Início |
+| CreateView, UpdateView, DeleteView, DetailView e ListView, com Crispy Forms e PostgreSQL do Neon | Reviews e itens da lista (`games/views.py`), formulários com `{{ form\|crispy }}`, banco de produção no Neon | Página do jogo → Ver reviews |
+
 ### 3º trimestre — 1ª parte
 
 | Requisito | Onde está | Como ver no site |

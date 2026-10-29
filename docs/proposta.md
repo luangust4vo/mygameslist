@@ -36,6 +36,7 @@ O MyGamesList é um site, no estilo do MyAnimeList, em que o jogador monta a sua
 11. Assistente de IA que responde sobre jogos e sobre o uso do site, com histórico por usuário, em `assistente/` **(existe)**.
 12. App `ia`: configuração editável, auditoria de cada chamada, cota mensal de tokens por usuário, e as telas de requisições (com filtros), configuração (com "Testar conexão"), IA por usuário e meu consumo **(existe)**.
 13. Comando para popular o catálogo com jogos populares por gênero e carregar as listas de gêneros e plataformas do RAWG **(novo, depois de 13/11)**.
+14. Página "Sobre" com a descrição do projeto e os diagramas de casos de uso e de classes, gerados por `docs/diagramas/gerar_diagramas.py` **(existe)**.
 
 ## 4. O que o sistema NÃO faz
 

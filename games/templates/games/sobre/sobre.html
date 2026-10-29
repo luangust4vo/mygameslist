@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Sobre — MyGamesList{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <h1 class="mgl-page-title">Sobre o MyGamesList</h1>
+
+        <section class="mgl-prose mb-5" aria-labelledby="projeto">
+            <h2 class="h3" id="projeto">O projeto</h2>
+            <p>
+                Quem joga em várias plataformas perde o controle do que já jogou, do que zerou e do que achou
+                de cada jogo. Além disso, escolher o próximo jogo é difícil, e as descrições quase sempre vêm em inglês.
+            </p>
+            <p>
+                O MyGamesList é um site no estilo do MyAnimeList para jogos. O jogador monta a própria lista com
+                status (Quero Jogar, Jogando, Pausado, Zerado, Platinado ou Dropado), escreve reviews com nota de
+                0 a 5 e conversa com um assistente de IA que conhece a lista dele. O catálogo vem da API do RAWG;
+                a descrição em português vem da Steam e, quando ela não existe, é traduzida pela IA.
+            </p>
+            <p>
+                Toda chamada à IA passa por um único ponto, que respeita a configuração feita pelo Moderador,
+                registra a chamada para auditoria e controla uma cota mensal de tokens por usuário.
+            </p>
+            <p class="mgl-card-meta">
+                Projeto da disciplina Novas Aplicações em Engenharia de Software, Engenharia de Software, IFPR, 2026.
+            </p>
+        </section>
+
+        <div class="row g-4 mb-5">
+            <section class="col-md-7" aria-labelledby="usuarios">
+                <h2 class="h3" id="usuarios">Quem usa</h2>
+                <dl class="sobre-atores">
+                    {% for nome, descricao in atores %}
+                        <dt>{{ nome }}</dt>
+                        <dd>{{ descricao }}</dd>
+                    {% endfor %}
+                </dl>
+            </section>
+            <section class="col-md-5" aria-labelledby="tecnologias">
+                <h2 class="h3" id="tecnologias">Tecnologias</h2>
+                <ul class="sobre-tecnologias">
+                    {% for tecnologia in tecnologias %}
+                        <li>{{ tecnologia }}</li>
+                    {% endfor %}
+                </ul>
+            </section>
+        </div>
+
+        <figure class="sobre-diagrama" aria-labelledby="legenda-casos">
+            <h2 class="h3" id="casos-de-uso">Diagrama de casos de uso</h2>
+            <a href="{% static 'img/diagrama-casos-de-uso.svg' %}" target="_blank" rel="noopener" class="sobre-diagrama-imagem">
+                <img src="{% static 'img/diagrama-casos-de-uso.svg' %}"
+                     alt="Diagrama de casos de uso: os atores Visitante, Jogador e Moderador e o que cada um faz no MyGamesList, além dos serviços externos RAWG, Steam e Gemini."
+                     loading="lazy">
+            </a>
+            <figcaption id="legenda-casos">
+                O Jogador herda o que o Visitante faz, e o Moderador herda o que o Jogador faz.
+                Clique na imagem para abrir em tamanho real.
+            </figcaption>
+        </figure>
+
+        <figure class="sobre-diagrama" aria-labelledby="legenda-classes">
+            <h2 class="h3" id="classes">Diagrama de classes</h2>
+            <a href="{% static 'img/diagrama-classes.svg' %}" target="_blank" rel="noopener" class="sobre-diagrama-imagem">
+                <img src="{% static 'img/diagrama-classes.svg' %}"
+                     alt="Diagrama de classes: Game, Genre, Platform, UserGameList, Review e Activity no app games; ConfiguracaoIA, CotaUsuario, RequisicaoIA e MensagemAssistente no app ia; e o User do Django."
+                     loading="lazy">
+            </a>
+            <figcaption id="legenda-classes">
+                Gerado a partir dos models por <code>docs/diagramas/gerar_diagramas.py</code>.
+                Clique na imagem para abrir em tamanho real.
+            </figcaption>
+        </figure>
+    </div>
+</div>
+{% endblock %}
